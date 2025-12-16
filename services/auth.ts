@@ -1,25 +1,39 @@
+/**
+ * Auth Service - Updated to use Backend API
+ * Maintains FULL backward compatibility with existing components (sync calls)
+ */
 
 import { User, Order } from '../types';
+import { authApi, ordersApi, usersApi, getToken, removeToken } from './api';
 import emailjs from '@emailjs/browser';
 
 const USERS_KEY = 'farrtz_users_db';
+const ORDERS_KEY = 'farrtz_orders_db';
 const ADMIN_SESSION_KEY = 'farrtz_admin_session';
 const USER_SESSION_KEY = 'farrtz_user_session';
-const ORDERS_KEY = 'farrtz_orders_db';
-// Key to store temporary reset codes: { email: { code: string, expires: number } }
-const RESET_CODES_KEY = 'farrtz_reset_codes';
 
-// --- KONFIGURASI EMAILJS (GANTI DENGAN PUNYA ANDA) ---
-// 1. Daftar di emailjs.com
-// 2. Buat Service (Gmail) -> dapat Service ID
-// 3. Buat Email Template -> dapat Template ID
-// 4. Ambil Public Key di Account Settings
+// --- KONFIGURASI EMAILJS (untuk password reset emails) ---
 const EMAILJS_SERVICE_ID = 'service_jhajp2d';
 const EMAILJS_TEMPLATE_ID = 'template_fmc5xpj';
 const EMAILJS_PUBLIC_KEY = 'eMXPedz89SSbeq6zC';
 
 // Simulate a database delay for realism
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Initialize orders from API on module load
+const initializeOrders = async () => {
+  try {
+    const response = await ordersApi.getAll();
+    if (response.success && response.orders) {
+      localStorage.setItem(ORDERS_KEY, JSON.stringify(response.orders));
+    }
+  } catch (error) {
+    console.log('API not available for orders, using localStorage');
+  }
+};
+
+// Auto-initialize
+initializeOrders();
 
 export const authService = {
   // --- DATABASE OPERATIONS ---
@@ -31,7 +45,6 @@ export const authService = {
 
   saveUser: (user: User) => {
     const users = authService.getUsers();
-    // Check if user exists, update if so, else push
     const index = users.findIndex(u => u.id === user.id);
     if (index !== -1) {
       users[index] = user;
@@ -39,29 +52,50 @@ export const authService = {
       users.push(user);
     }
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
-  },
 
-  // --- ORDER OPERATIONS ---
-
-  createOrder: async (order: Order): Promise<{ success: boolean; message?: string }> => {
-    await delay(1000); // Simulate processing
-    try {
-      const ordersStr = localStorage.getItem(ORDERS_KEY);
-      const orders: Order[] = ordersStr ? JSON.parse(ordersStr) : [];
-      orders.push(order);
-      localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
-      return { success: true };
-    } catch (error) {
-      return { success: false, message: 'Failed to save order' };
+    // Also update in API (fire and forget)
+    if (user.id) {
+      usersApi.update(user.id, user).catch(console.error);
     }
   },
 
-  getOrdersByUser: (userId: string): Order[] => {
+  // --- ORDER OPERATIONS (SYNC for backward compatibility) ---
+
+  createOrder: async (order: Order): Promise<{ success: boolean; message?: string }> => {
+    await delay(1000);
+    try {
+      // Try API first
+      const response = await ordersApi.create({
+        items: order.items,
+        shippingDetails: order.shippingDetails,
+        totalAmount: order.totalAmount,
+        paymentMethod: order.paymentMethod,
+        paymentProofUrl: order.paymentProofUrl
+      });
+
+      if (response.success) {
+        // Refresh local cache
+        await initializeOrders();
+        return { success: true };
+      }
+    } catch (error) {
+      console.log('API error, saving order to localStorage');
+    }
+
+    // Fallback to localStorage
     const ordersStr = localStorage.getItem(ORDERS_KEY);
     const orders: Order[] = ordersStr ? JSON.parse(ordersStr) : [];
+    orders.push(order);
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+    return { success: true };
+  },
+
+  getOrdersByUser: (userId: string): Order[] => {
+    const orders = authService.getAllOrders();
     return orders.filter(o => o.userId === userId);
   },
 
+  // SYNC version for backward compatibility
   getAllOrders: (): Order[] => {
     const ordersStr = localStorage.getItem(ORDERS_KEY);
     return ordersStr ? JSON.parse(ordersStr) : [];
@@ -69,11 +103,16 @@ export const authService = {
 
   updateOrderStatus: async (orderId: string, status: Order['status']): Promise<boolean> => {
     await delay(500);
+
+    // Update localStorage
     const orders = authService.getAllOrders();
     const index = orders.findIndex(o => o.id === orderId);
     if (index !== -1) {
       orders[index].status = status;
       localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+
+      // Also update in API (fire and forget)
+      ordersApi.updateStatus(orderId, status).catch(console.error);
       return true;
     }
     return false;
@@ -82,58 +121,73 @@ export const authService = {
   // --- AUTH OPERATIONS ---
 
   async register(firstName: string, lastName: string, email: string, password: string): Promise<{ success: boolean; message?: string; user?: User }> {
-    await delay(800); // Fake network delay
+    await delay(800);
 
-    const users = authService.getUsers();
+    try {
+      const response = await authApi.register(firstName, lastName, email, password);
+      if (response.success && response.user) {
+        authService.setUserSession(response.user);
+        return { success: true, user: response.user };
+      }
+      return { success: false, message: response.message };
+    } catch (error) {
+      // Fallback to localStorage registration
+      const users = authService.getUsers();
 
-    // Check if user already exists
-    if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
-      return { success: false, message: 'Email already registered.' };
+      if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+        return { success: false, message: 'Email already registered.' };
+      }
+
+      const newUser: User = {
+        id: Date.now().toString(),
+        firstName,
+        lastName,
+        email,
+        password,
+        avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${firstName}`,
+        wishlist: [],
+        isAdmin: false
+      };
+
+      authService.saveUser(newUser);
+      authService.setUserSession(newUser);
+      return { success: true, user: newUser };
     }
-
-    const newUser: User = {
-      id: Date.now().toString(),
-      firstName,
-      lastName,
-      email,
-      password, // In a real app, this would be hashed!
-      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${firstName}`,
-      wishlist: [],
-      isAdmin: false
-    };
-
-    authService.saveUser(newUser);
-    return { success: true, user: newUser };
   },
 
   async login(email: string, password: string): Promise<{ success: boolean; message?: string; user?: User }> {
-    await delay(800); // Fake network delay
+    await delay(800);
 
-    const users = authService.getUsers();
-    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+    try {
+      const response = await authApi.login(email, password);
+      if (response.success && response.user) {
+        authService.setUserSession(response.user);
+        return { success: true, user: response.user };
+      }
+      return { success: false, message: response.message };
+    } catch (error) {
+      // Fallback to localStorage login
+      const users = authService.getUsers();
+      const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
 
-    if (!user) {
-      return { success: false, message: 'Invalid email or password.' };
+      if (!user) {
+        return { success: false, message: 'Invalid email or password.' };
+      }
+
+      if (user.isAdmin) {
+        return { success: false, message: 'Please use admin login page.' };
+      }
+
+      if (!user.wishlist) user.wishlist = [];
+      authService.setUserSession(user);
+      return { success: true, user };
     }
-
-    // Don't allow admin login through user login
-    if (user.isAdmin) {
-      return { success: false, message: 'Please use admin login page.' };
-    }
-
-    // Initialize wishlist if undefined
-    if (!user.wishlist) user.wishlist = [];
-
-    // Create user session
-    authService.setUserSession(user);
-
-    return { success: true, user };
   },
 
   async adminLogin(email: string, password: string): Promise<{ success: boolean; message?: string; user?: User }> {
-    await delay(800); // Fake network delay
+    await delay(800);
 
-    // HARDCODED ADMIN CHECK
+    // HARDCODED ADMIN CHECK (same as original)
     if (email === 'admin@gmail.com' && password === 'admin') {
       const adminUser: User = {
         id: 'admin-master',
@@ -145,6 +199,10 @@ export const authService = {
         isAdmin: true
       };
       authService.setAdminSession(adminUser);
+
+      // Also try to login via API to get token
+      authApi.adminLogin(email, password).catch(console.error);
+
       return { success: true, user: adminUser };
     }
 
@@ -154,10 +212,8 @@ export const authService = {
   async updateUser(updatedUser: User): Promise<{ success: boolean; user?: User }> {
     await delay(500);
 
-    // Update in DB
     authService.saveUser(updatedUser);
 
-    // Update in appropriate Session
     if (updatedUser.isAdmin) {
       authService.setAdminSession(updatedUser);
     } else {
@@ -169,10 +225,12 @@ export const authService = {
 
   logoutUser: () => {
     sessionStorage.removeItem(USER_SESSION_KEY);
+    removeToken();
   },
 
   logoutAdmin: () => {
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    removeToken();
   },
 
   // --- PASSWORD RESET LOGIC ---
@@ -180,78 +238,30 @@ export const authService = {
   async initiatePasswordReset(email: string): Promise<{ success: boolean; message?: string }> {
     await delay(1000);
 
-    // 1. Check if user exists
-    const users = authService.getUsers();
-    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-
-    // Also allow admin to reset self (simulation)
-    const isAdmin = email === 'admin@gmail.com';
-
-    if (!user && !isAdmin) {
-      return { success: false, message: 'Email address not found in our records.' };
-    }
-
-    // 2. Generate 5-digit code
-    const code = Math.floor(10000 + Math.random() * 90000).toString();
-    const expires = Date.now() + 5 * 60 * 1000; // 5 minutes from now
-
-    // 3. Store code
-    const resetCodes = JSON.parse(localStorage.getItem(RESET_CODES_KEY) || '{}');
-    resetCodes[email] = { code, expires };
-    localStorage.setItem(RESET_CODES_KEY, JSON.stringify(resetCodes));
-
-    // 4. Send Email via EmailJS
-    console.log(`[AUTH] Generating code for ${email}: ${code}`);
-
-    // CHECK: Have you replaced all placeholders?
-    // We check if ANY of them are still placeholders. If so, use simulation.
-    // Casting to string to avoid TS error if constants are inferred as literals that don't overlap with placeholders
-    if ((EMAILJS_SERVICE_ID as string) === 'YOUR_SERVICE_ID' || (EMAILJS_TEMPLATE_ID as string) === 'YOUR_TEMPLATE_ID' || (EMAILJS_PUBLIC_KEY as string) === 'YOUR_PUBLIC_KEY') {
-      // Fallback to alert if user hasn't configured ALL keys yet
-      alert(`[DEV MODE] EmailJS incomplete configuration.\n\nSimulated Email to: ${email}\nCode: ${code}\n\nPlease set Template ID and Public Key in services/auth.ts`);
-      return { success: true, message: 'Code simulated (Configure EmailJS for real emails)' };
-    }
-
     try {
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        {
-          to_name: user ? user.firstName : 'Admin',
-          to_email: email,
-          code: code,
-          // INI PERUBAHAN PENTING:
-          // Kita masukkan Kode langsung ke dalam variabel 'message'.
-          // Template default EmailJS biasanya pasti menampilkan variabel {{message}}.
-          message: `KODE RESET PASSWORD ANDA ADALAH: ${code}. (Berlaku 5 menit)`
-        },
-        EMAILJS_PUBLIC_KEY
-      );
-      return { success: true, message: 'Code sent to your email' };
+      const response = await authApi.forgotPassword(email);
+      if (response.success) {
+        if (response.devCode) {
+          console.log(`[AUTH] Dev mode - Reset code: ${response.devCode}`);
+          alert(`[DEV MODE] Reset code: ${response.devCode}`);
+        }
+        return { success: true, message: response.message };
+      }
+      return { success: false, message: response.message };
     } catch (error) {
-      console.error('EmailJS Error:', error);
-      return { success: false, message: 'Failed to send email. Check network or API keys.' };
+      return { success: false, message: 'Network error. Please try again.' };
     }
   },
 
   async validateResetCode(email: string, code: string): Promise<{ success: boolean; message?: string }> {
     await delay(800);
-    const resetCodes = JSON.parse(localStorage.getItem(RESET_CODES_KEY) || '{}');
-    const record = resetCodes[email];
 
-    if (!record) {
-      return { success: false, message: 'No reset request found for this email.' };
+    try {
+      const response = await authApi.validateResetCode(email, code);
+      return { success: response.success, message: response.message };
+    } catch (error) {
+      return { success: false, message: 'Validation failed. Please try again.' };
     }
-
-    if (Date.now() > record.expires) {
-      return { success: false, message: 'Code has expired. Please request a new one.' };
-    }
-
-    if (record.code !== code) {
-      return { success: false, message: 'Invalid code. Please try again.' };
-    }
-
-    return { success: true };
   },
 
   async completePasswordReset(email: string, newPassword: string): Promise<{ success: boolean; message?: string }> {
@@ -262,36 +272,33 @@ export const authService = {
       return { success: false, message: 'Cannot reset hardcoded admin password in demo.' };
     }
 
-    const users = authService.getUsers();
-    const index = users.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+    try {
+      const response = await authApi.resetPassword(email, newPassword);
+      return { success: response.success, message: response.message };
+    } catch (error) {
+      // Fallback to localStorage
+      const users = authService.getUsers();
+      const index = users.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
 
-    if (index === -1) {
-      return { success: false, message: 'User not found.' };
+      if (index === -1) {
+        return { success: false, message: 'User not found.' };
+      }
+
+      users[index].password = newPassword;
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+      return { success: true, message: 'Password updated successfully' };
     }
-
-    // Update password
-    users[index].password = newPassword;
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-
-    // Clean up reset code
-    const resetCodes = JSON.parse(localStorage.getItem(RESET_CODES_KEY) || '{}');
-    delete resetCodes[email];
-    localStorage.setItem(RESET_CODES_KEY, JSON.stringify(resetCodes));
-
-    return { success: true, message: 'Password updated successfully' };
   },
 
   // --- SESSION MANAGEMENT ---
 
   setUserSession: (user: User) => {
-    // Don't store password in session
     const safeUser = { ...user };
     delete safeUser.password;
     sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(safeUser));
   },
 
   setAdminSession: (user: User) => {
-    // Don't store password in session
     const safeUser = { ...user };
     delete safeUser.password;
     sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(safeUser));
@@ -307,9 +314,35 @@ export const authService = {
     return sessionStr ? JSON.parse(sessionStr) : null;
   },
 
-  // Legacy method for backward compatibility
   getCurrentUser: (): User | null => {
-    // Check both sessions, prioritize admin
     return authService.getCurrentAdminSession() || authService.getCurrentUserSession();
+  },
+
+  isAuthenticated: (): boolean => {
+    return !!getToken();
+  },
+
+  async refreshCurrentUser(): Promise<User | null> {
+    if (!getToken()) return null;
+
+    try {
+      const response = await authApi.getCurrentUser();
+      if (response.success && response.user) {
+        if (response.user.isAdmin) {
+          authService.setAdminSession(response.user);
+        } else {
+          authService.setUserSession(response.user);
+        }
+        return response.user;
+      }
+    } catch (error) {
+      console.log('Failed to refresh user from API');
+    }
+    return null;
+  },
+
+  // Refresh orders from API
+  refreshOrders: async (): Promise<void> => {
+    await initializeOrders();
   }
 };
