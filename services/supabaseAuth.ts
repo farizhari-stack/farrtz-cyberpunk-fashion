@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase'
+import { supabase } from '../src/lib/supabase'
 import type { User } from '../types'
 
 // Auth Functions
