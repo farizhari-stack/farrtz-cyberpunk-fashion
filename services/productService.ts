@@ -1,27 +1,15 @@
 /**
- * Product Service - Updated to use Supabase
- * Maintains FULL backward compatibility with existing components (sync calls)
+ * Product Service - localStorage Version (No Backend)
+ * All products stored in browser localStorage
  */
 
 import { Product } from '../types';
-import { productsService } from './supabaseServices';
 import { generateMixedProducts } from '../utils/products';
 
 const PRODUCTS_KEY = 'farrtz_products_db';
 
-// Initialize on module load - sync from Supabase to localStorage
-const initializeProducts = async () => {
-  try {
-    const products = await productsService.getAllProducts();
-    if (products && products.length > 0) {
-      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-      return;
-    }
-  } catch (error) {
-    console.log('Supabase not available, using localStorage fallback');
-  }
-
-  // Fallback to localStorage if Supabase is not available
+// Initialize products on first load
+const initializeProducts = () => {
   const stored = localStorage.getItem(PRODUCTS_KEY);
   if (!stored) {
     const initialProducts = [...generateMixedProducts(20, 100)];
@@ -29,15 +17,16 @@ const initializeProducts = async () => {
   }
 };
 
-// Auto-initialize on load
-initializeProducts();
-
 export const productService = {
-  // SYNC version - returns from localStorage (backward compatible!)
+  // Initialize products
+  initialize: () => {
+    initializeProducts();
+  },
+
+  // Get all products (sync)
   getAllProducts: (): Product[] => {
     const stored = localStorage.getItem(PRODUCTS_KEY);
     if (!stored) {
-      // Generate initial products if none exist
       const initialProducts = [...generateMixedProducts(20, 100)];
       localStorage.setItem(PRODUCTS_KEY, JSON.stringify(initialProducts));
       return initialProducts;
@@ -45,17 +34,9 @@ export const productService = {
     return JSON.parse(stored);
   },
 
-  // ASYNC version - fetches from Supabase and updates cache
+  // Async version for compatibility
   getAllProductsAsync: async (): Promise<Product[]> => {
-    try {
-      const products = await productsService.getAllProducts();
-      if (products) {
-        return products;
-      }
-    } catch (error) {
-      console.error('Supabase error:', error);
-    }
-    return [];
+    return productService.getAllProducts();
   },
 
   // Alias for backward compatibility
@@ -63,64 +44,44 @@ export const productService = {
     return productService.getAllProducts();
   },
 
-  // Initialize - can be called manually to refresh from Supabase
-  initialize: async () => {
-    await initializeProducts();
-  },
-
+  // Get product by ID
   getProductById: (id: number): Product | undefined => {
     const products = productService.getAllProducts();
     return products.find(p => p.id === id);
   },
 
-  // Async version that tries Supabase first
+  // Async version for compatibility
   getProductByIdAsync: async (id: number): Promise<Product | undefined> => {
-    try {
-      const product = await productsService.getProductById(id);
-      if (product) {
-        return product;
-      }
-    } catch (error) {
-      console.log('Supabase error, using localStorage fallback');
-    }
     return productService.getProductById(id);
   },
 
+  // Save product (create or update)
   saveProduct: async (product: Product): Promise<{ success: boolean; product?: Product }> => {
-    try {
-      let savedProduct;
-      if (product.id && product.id > 0) {
-        // Update existing product
-        savedProduct = await productsService.updateProduct(product.id, product);
-      } else {
-        // Create new product
-        savedProduct = await productsService.createProduct(product);
-      }
+    const products = productService.getAllProducts();
 
-      if (savedProduct) {
-        console.log('✅ Product saved to database:', savedProduct);
-        return { success: true, product: savedProduct };
-      } else {
-        console.error('❌ Failed to save product');
-        return { success: false };
+    if (product.id && product.id > 0) {
+      // Update existing product
+      const index = products.findIndex(p => p.id === product.id);
+      if (index >= 0) {
+        products[index] = product;
+        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+        return { success: true, product };
       }
-    } catch (error) {
-      console.error('❌ Error saving product:', error);
       return { success: false };
+    } else {
+      // Create new product
+      const newProduct = { ...product, id: Date.now() };
+      products.push(newProduct);
+      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+      return { success: true, product: newProduct };
     }
   },
 
-  deleteProduct: async (id: number) => {
+  // Delete product
+  deleteProduct: async (id: number): Promise<void> => {
     const products = productService.getAllProducts();
     const filtered = products.filter(p => p.id !== id);
     localStorage.setItem(PRODUCTS_KEY, JSON.stringify(filtered));
-
-    // Also delete from Supabase in background
-    try {
-      await productsService.deleteProduct(id);
-    } catch (error) {
-      console.error('Failed to delete from Supabase:', error);
-    }
   },
 
   // Filter products by category
@@ -150,15 +111,8 @@ export const productService = {
     return products.filter(p => p.isNew);
   },
 
-  // Refresh products from Supabase (call this periodically or on user action)
+  // Refresh (no-op in localStorage version)
   refreshFromApi: async (): Promise<void> => {
-    try {
-      const products = await productsService.getAllProducts();
-      if (products) {
-        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-      }
-    } catch (error) {
-      console.log('Failed to refresh from Supabase');
-    }
+    // No API to refresh from
   }
 };
