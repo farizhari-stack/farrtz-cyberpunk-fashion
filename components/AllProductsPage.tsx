@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion as framerMotion, AnimatePresence } from 'framer-motion';
 import { Filter, ChevronDown, Check, X, ChevronUp } from 'lucide-react';
 import Navbar from './Navbar';
@@ -41,8 +41,15 @@ const AllProductsPage: React.FC<AllProductsPageProps> = ({
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [isProductAccordionOpen, setIsProductAccordionOpen] = useState(true);
 
-  // Data Generation - Get all products from the database
-  const baseAllProducts = useMemo(() => productService.getAllProducts(), []);
+  const [baseAllProducts, setBaseAllProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      const products = await productService.getAllProductsAsync();
+      setBaseAllProducts(products);
+    };
+    loadProducts();
+  }, []);
 
   // Sorting and Filtering Logic
   const sortedAllProducts = useMemo(() => {

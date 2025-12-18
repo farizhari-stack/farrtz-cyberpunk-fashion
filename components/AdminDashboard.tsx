@@ -74,25 +74,30 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         loadData();
     }, []);
 
-    const loadData = () => {
+    const loadData = async () => {
         setLoading(true);
-        const allOrders = authService.getAllOrders();
-        const allProducts = productService.getAllProducts();
+        try {
+            const allOrders = await authService.getAllOrdersAsync();
+            const allProducts = await productService.getAllProductsAsync();
 
-        setOrders(allOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
-        setProducts(allProducts);
+            setOrders(allOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+            setProducts(allProducts);
 
-        // Calc Stats
-        const revenue = allOrders.reduce((acc, curr) => acc + curr.totalAmount, 0);
-        const pending = allOrders.filter(o => o.status === 'pending' || o.status === 'confirmed' || o.status === 'packing').length;
+            // Calc Stats
+            const revenue = allOrders.reduce((acc, curr) => acc + curr.totalAmount, 0);
+            const pending = allOrders.filter(o => o.status === 'pending' || o.status === 'confirmed' || o.status === 'packing').length;
 
-        setStats({
-            revenue,
-            totalOrders: allOrders.length,
-            pending,
-            totalProducts: allProducts.length
-        });
-        setLoading(false);
+            setStats({
+                revenue,
+                totalOrders: allOrders.length,
+                pending,
+                totalProducts: allProducts.length
+            });
+        } catch (error) {
+            console.error("Failed to load dashboard data", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     // --- ORDER WORKFLOW LOGIC ---
@@ -174,7 +179,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         setShowProductModal(true);
     };
 
-    const handleSaveProduct = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSaveProduct = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
 
@@ -192,7 +197,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         const finalImageUrl = imageInputMode === 'url' ? imageUrl : productImageFile;
 
         const newProduct: Product = {
-            id: editingProduct ? editingProduct.id : Date.now(),
+            id: editingProduct ? editingProduct.id : 0, // Use 0 for new products so API assigns ID
             title: formData.get('title') as string,
             price: finalPrice,
             originalPrice: originalPrice,
@@ -206,10 +211,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
             discountEndTime: editingProduct?.discountEndTime
         };
 
-        productService.saveProduct(newProduct);
-        setShowProductModal(false);
-        setEditingProduct(null);
-        loadData();
+        const result = await productService.saveProduct(newProduct);
+
+        if (result.success) {
+            setShowProductModal(false);
+            setEditingProduct(null);
+            await loadData(); // Refresh data from API
+        } else {
+            alert('Failed to save product to database. Please try again.');
+        }
     };
 
     return (

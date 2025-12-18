@@ -16,7 +16,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:5173', process.env.FRONTEND_URL].filter(Boolean),
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173', process.env.FRONTEND_URL].filter(Boolean),
     credentials: true
 }));
 app.use(express.json({ limit: '10mb' })); // For payment proof images

@@ -21,15 +21,10 @@ const EMAILJS_PUBLIC_KEY = 'eMXPedz89SSbeq6zC';
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Initialize orders from API on module load
+// Initialize orders from API on module load
 const initializeOrders = async () => {
-  try {
-    const response = await ordersApi.getAll();
-    if (response.success && response.orders) {
-      localStorage.setItem(ORDERS_KEY, JSON.stringify(response.orders));
-    }
-  } catch (error) {
-    console.log('API not available for orders, using localStorage');
-  }
+  // No-op or just log
+  console.log("Orders initialized via API");
 };
 
 // Auto-initialize
@@ -39,32 +34,30 @@ export const authService = {
   // --- DATABASE OPERATIONS ---
 
   getUsers: (): User[] => {
-    const usersStr = localStorage.getItem(USERS_KEY);
-    return usersStr ? JSON.parse(usersStr) : [];
+    // Deprecated: Users should be fetched via API
+    return [];
   },
 
-  saveUser: (user: User) => {
-    const users = authService.getUsers();
-    const index = users.findIndex(u => u.id === user.id);
-    if (index !== -1) {
-      users[index] = user;
-    } else {
-      users.push(user);
-    }
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-
-    // Also update in API (fire and forget)
+  saveUser: async (user: User) => {
+    // Direct API call via usersApi or authApi if needed,
+    // but typically user update happens via specific endpoints.
+    // We will assume this legacy method was for local dev.
+    console.warn("saveUser is deprecated. Use usersApi.update()");
+    // If the user has an ID, attempt to update via API
     if (user.id) {
-      usersApi.update(user.id, user).catch(console.error);
+      try {
+        await usersApi.update(user.id, user);
+      } catch (error) {
+        console.error("Failed to update user via API:", error);
+      }
     }
+    return user;
   },
 
-  // --- ORDER OPERATIONS (SYNC for backward compatibility) ---
+  // --- ORDER OPERATIONS ---
 
   createOrder: async (order: Order): Promise<{ success: boolean; message?: string }> => {
-    await delay(1000);
     try {
-      // Try API first
       const response = await ordersApi.create({
         items: order.items,
         shippingDetails: order.shippingDetails,
@@ -74,48 +67,54 @@ export const authService = {
       });
 
       if (response.success) {
-        // Refresh local cache
-        await initializeOrders();
         return { success: true };
       }
+      return { success: false, message: response.message || 'Failed to create order' };
     } catch (error) {
-      console.log('API error, saving order to localStorage');
+      console.error('Order creation failed:', error);
+      return { success: false, message: 'Network error' };
     }
-
-    // Fallback to localStorage
-    const ordersStr = localStorage.getItem(ORDERS_KEY);
-    const orders: Order[] = ordersStr ? JSON.parse(ordersStr) : [];
-    orders.push(order);
-    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
-    return { success: true };
   },
 
-  getOrdersByUser: (userId: string): Order[] => {
-    const orders = authService.getAllOrders();
-    return orders.filter(o => o.userId === userId);
+  getOrdersByUser: async (userId: string): Promise<Order[]> => {
+    try {
+      const response = await ordersApi.getAll();
+      if (response.success && response.orders) {
+        return response.orders.filter((o: Order) => o.userId === userId);
+      }
+    } catch (error) {
+      console.error('Failed to get user orders:', error);
+    }
+    return [];
   },
 
-  // SYNC version for backward compatibility
+  // Async version
+  getAllOrdersAsync: async (): Promise<Order[]> => {
+    try {
+      const response = await ordersApi.getAll();
+      if (response.success && response.orders) {
+        return response.orders;
+      }
+    } catch (error) {
+      console.error('Failed to fetch orders:', error);
+    }
+    return [];
+  },
+
+  // Deprecated sync version - kept for temporary compatibility but returns empty
   getAllOrders: (): Order[] => {
-    const ordersStr = localStorage.getItem(ORDERS_KEY);
-    return ordersStr ? JSON.parse(ordersStr) : [];
+    console.warn("authService.getAllOrders() is deprecated. Use getAllOrdersAsync().");
+    return [];
   },
 
   updateOrderStatus: async (orderId: string, status: Order['status']): Promise<boolean> => {
-    await delay(500);
-
-    // Update localStorage
-    const orders = authService.getAllOrders();
-    const index = orders.findIndex(o => o.id === orderId);
-    if (index !== -1) {
-      orders[index].status = status;
-      localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
-
-      // Also update in API (fire and forget)
-      ordersApi.updateStatus(orderId, status).catch(console.error);
-      return true;
+    try {
+      const response = await ordersApi.updateStatus(orderId, status);
+      return response.success;
+    } catch (error) {
+      console.error('Failed to update order status:', error);
+      return false;
     }
-    return false;
   },
 
   // --- AUTH OPERATIONS ---
@@ -185,28 +184,32 @@ export const authService = {
   },
 
   async adminLogin(email: string, password: string): Promise<{ success: boolean; message?: string; user?: User }> {
-    await delay(800);
+    await delay(300);
 
-    // HARDCODED ADMIN CHECK (same as original)
-    if (email === 'admin@gmail.com' && password === 'admin') {
-      const adminUser: User = {
-        id: 'admin-master',
-        firstName: 'System',
-        lastName: 'Admin',
-        email: 'admin@gmail.com',
-        avatar: 'https://cdn-icons-png.flaticon.com/512/2942/2942813.png',
-        wishlist: [],
-        isAdmin: true
-      };
-      authService.setAdminSession(adminUser);
+    try {
+      // Call the backend API for admin login
+      const response = await authApi.adminLogin(email, password);
 
-      // Also try to login via API to get token
-      authApi.adminLogin(email, password).catch(console.error);
+      if (response.success && response.user) {
+        const adminUser: User = {
+          id: response.user.id || 'admin-master',
+          firstName: response.user.firstName || 'System',
+          lastName: response.user.lastName || 'Admin',
+          email: response.user.email || email,
+          avatar: response.user.avatar || 'https://cdn-icons-png.flaticon.com/512/2942/2942813.png',
+          wishlist: response.user.wishlist || [],
+          isAdmin: true
+        };
+        authService.setAdminSession(adminUser);
+        console.log('✅ Admin logged in successfully, token stored');
+        return { success: true, user: adminUser };
+      }
 
-      return { success: true, user: adminUser };
+      return { success: false, message: response.message || 'Invalid admin credentials.' };
+    } catch (error) {
+      console.error('Admin login error:', error);
+      return { success: false, message: 'Login failed. Please try again.' };
     }
-
-    return { success: false, message: 'Invalid admin credentials.' };
   },
 
   async updateUser(updatedUser: User): Promise<{ success: boolean; user?: User }> {

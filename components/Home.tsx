@@ -37,8 +37,12 @@ const Home: React.FC<HomeProps> = ({ onNavigate, user, onLogout, onProductClick,
     const [allProducts, setAllProducts] = useState<Product[]>([]);
 
     useEffect(() => {
-        // Initial fetch to get any admin changes
-        setAllProducts(productService.getAllProducts());
+        const fetchProducts = async () => {
+            const products = await productService.getAllProductsAsync();
+            setAllProducts(products);
+        };
+
+        fetchProducts();
 
         if (targetCategory) {
             setActiveCategory(targetCategory);

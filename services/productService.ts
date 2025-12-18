@@ -50,13 +50,12 @@ export const productService = {
     try {
       const response = await productsApi.getAll();
       if (response.success && response.products) {
-        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(response.products));
         return response.products;
       }
     } catch (error) {
-      console.log('API error, using localStorage fallback');
+      console.error('API error:', error);
     }
-    return productService.getAllProducts();
+    return [];
   },
 
   // Alias for backward compatibility
@@ -87,22 +86,27 @@ export const productService = {
     return productService.getProductById(id);
   },
 
-  saveProduct: (product: Product) => {
-    const products = productService.getAllProducts();
-    const index = products.findIndex(p => p.id === product.id);
+  saveProduct: async (product: Product): Promise<{ success: boolean; product?: Product }> => {
+    try {
+      let response;
+      if (product.id && product.id > 0) {
+        // Update existing product
+        response = await productsApi.update(product.id, product);
+      } else {
+        // Create new product
+        response = await productsApi.create(product);
+      }
 
-    if (index !== -1) {
-      products[index] = product;
-    } else {
-      products.push(product);
-    }
-    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-
-    // Also save to API in background (fire and forget)
-    if (product.id) {
-      productsApi.update(product.id, product).catch(console.error);
-    } else {
-      productsApi.create(product).catch(console.error);
+      if (response.success) {
+        console.log('✅ Product saved to database:', response.product || product);
+        return { success: true, product: response.product || product };
+      } else {
+        console.error('❌ Failed to save product:', response.message);
+        return { success: false };
+      }
+    } catch (error) {
+      console.error('❌ Error saving product:', error);
+      return { success: false };
     }
   },
 

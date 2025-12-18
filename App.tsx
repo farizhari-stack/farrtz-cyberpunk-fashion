@@ -18,6 +18,7 @@ import ChatWidget from './components/ChatWidget';
 import { PageType, Product, CartItem, User, Feedback, ChatConversation, ChatMessage, Coupon } from './types';
 import { authService } from './services/auth';
 import { productService } from './services/productService';
+import { feedbackApi, messagesApi, couponsApi } from './services/api';
 import { validateCoupon } from './utils/couponUtils';
 
 
@@ -295,182 +296,112 @@ const App: React.FC = () => {
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
 
   // Load feedback and chat data from localStorage on mount + setup polling
+  // Load initial data from API
   useEffect(() => {
-    const loadData = () => {
-      const savedFeedbacks = localStorage.getItem('feedbacks');
-      const savedConversations = localStorage.getItem('conversations');
-      const savedCoupons = localStorage.getItem('coupons');
+    const loadData = async () => {
+      try {
+        const [fbRes, msgRes, cpnRes] = await Promise.all([
+          feedbackApi.getAll(),
+          messagesApi.getAll(),
+          couponsApi.getAll()
+        ]);
 
-      if (savedFeedbacks) {
-        setFeedbacks(JSON.parse(savedFeedbacks));
-      }
-      if (savedConversations) {
-        setConversations(JSON.parse(savedConversations));
-      }
-      if (savedCoupons) {
-        setCoupons(JSON.parse(savedCoupons));
+        if (fbRes.success && fbRes.feedbacks) setFeedbacks(fbRes.feedbacks);
+        if (msgRes.success && msgRes.conversations) setConversations(msgRes.conversations);
+        if (cpnRes.success && cpnRes.coupons) setCoupons(cpnRes.coupons);
+      } catch (error) {
+        console.error("Failed to load initial app data", error);
       }
     };
 
-    // Initial load
     loadData();
 
-    // Setup polling for realtime updates (every 3 seconds)
-    const pollInterval = setInterval(() => {
-      loadData();
-    }, 3000);
-
+    // Polling for updates (every 5 seconds)
+    const pollInterval = setInterval(loadData, 5000);
     return () => clearInterval(pollInterval);
   }, []);
 
   // Save to localStorage whenever data changes (but not empty arrays on initial load)
-  useEffect(() => {
-    if (feedbacks.length > 0) {
-      console.log('💾 Saving feedbacks to localStorage:', feedbacks);
-      localStorage.setItem('feedbacks', JSON.stringify(feedbacks));
-    }
-  }, [feedbacks]);
+  // REMOVED localStorage effects
 
-  useEffect(() => {
-    if (conversations.length > 0) {
-      console.log('💾 Saving conversations to localStorage:', conversations);
-      localStorage.setItem('conversations', JSON.stringify(conversations));
-    }
-  }, [conversations]);
-
-  useEffect(() => {
-    if (coupons.length > 0) {
-      console.log('💾 Saving coupons to localStorage:', coupons);
-      localStorage.setItem('coupons', JSON.stringify(coupons));
-    }
-  }, [coupons]);
 
   // Feedback handlers
-  const handleSubmitFeedback = (newFeedback: Omit<Feedback, 'id' | 'date' | 'status'>) => {
-    console.log('📝 handleSubmitFeedback called with:', newFeedback);
-
-    const feedback: Feedback = {
+  const handleSubmitFeedback = async (newFeedback: Omit<Feedback, 'id' | 'date' | 'status'>) => {
+    const feedbackData = {
       ...newFeedback,
-      id: Date.now().toString(),
       date: new Date().toISOString(),
-      status: 'pending',
+      status: 'pending' as const, // Cast to literal type
     };
 
-    console.log('✅ Created feedback object:', feedback);
-
-    setFeedbacks((prev) => {
-      const updated = [feedback, ...prev];
-      console.log('📊 Updated feedbacks array:', updated);
-      // Immediately save to localStorage
-      localStorage.setItem('feedbacks', JSON.stringify(updated));
-      return updated;
-    });
-
-    console.log('✅ Feedback submitted successfully!');
+    try {
+      const res = await feedbackApi.create(feedbackData);
+      if (res.success && res.feedback) {
+        setFeedbacks((prev) => [res.feedback, ...prev]);
+        console.log('✅ Feedback submitted via API!');
+      }
+    } catch (e) {
+      console.error('Failed to submit feedback', e);
+    }
   };
 
-  const handleUpdateFeedbackStatus = (feedbackId: string, status: Feedback['status']) => {
-    setFeedbacks((prev) =>
-      prev.map((f) => (f.id === feedbackId ? { ...f, status } : f))
-    );
+
+
+  const handleUpdateFeedbackStatus = async (feedbackId: string, status: Feedback['status']) => {
+    try {
+      const res = await feedbackApi.updateStatus(feedbackId, status);
+      if (res.success) {
+        setFeedbacks((prev) =>
+          prev.map((f) => (f.id === feedbackId ? { ...f, status } : f))
+        );
+      }
+    } catch (e) { console.error(e); }
   };
 
   // Chat handlers
-  const handleUserSendMessage = (userId: string, userName: string, message: string) => {
-    console.log('User sending message:', { userId, userName, message });
-
-    const newMessage: ChatMessage = {
-      id: Date.now().toString(),
+  const handleUserSendMessage = async (userId: string, userName: string, message: string) => {
+    const messageData = {
       userId,
       userName,
       message,
       sender: 'user',
-      timestamp: new Date().toISOString(),
-      read: false,
     };
 
-    setConversations((prev) => {
-      console.log('Current conversations:', prev);
-      const existing = prev.find((c) => c.userId === userId);
-      let updated;
-      if (existing) {
-        console.log('Updating existing conversation');
-        updated = prev.map((c) =>
-          c.userId === userId
-            ? {
-              ...c,
-              messages: [...c.messages, newMessage],
-              lastMessageTime: newMessage.timestamp,
-            }
-            : c
-        );
-      } else {
-        console.log('Creating new conversation');
-        // Create new conversation
-        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        updated = [
-          ...prev,
-          {
-            userId,
-            userName,
-            userEmail: currentUser.email || '',
-            messages: [newMessage],
-            lastMessageTime: newMessage.timestamp,
-            unreadCount: 0,
-          },
-        ];
+    try {
+      const res = await messagesApi.sendMessage(messageData);
+      if (res.success) {
+        // Optimistic update or wait for poll
+        const resAll = await messagesApi.getAll();
+        if (resAll.success) setConversations(resAll.conversations);
       }
-
-      // Immediately save to localStorage
-      console.log('💾 Saving conversations to localStorage:', updated);
-      localStorage.setItem('conversations', JSON.stringify(updated));
-
-      return updated;
-    });
+    } catch (e) { console.error(e); }
   };
 
-  const handleAdminSendMessage = (userId: string, message: string) => {
-    const newMessage: ChatMessage = {
-      id: Date.now().toString(),
+  const handleAdminSendMessage = async (userId: string, message: string) => {
+    const messageData = {
       userId,
-      userName: 'Admin',
       message,
       sender: 'admin',
-      timestamp: new Date().toISOString(),
-      read: false,
     };
 
-    setConversations((prev) =>
-      prev.map((c) =>
-        c.userId === userId
-          ? {
-            ...c,
-            messages: [...c.messages, newMessage],
-            lastMessageTime: newMessage.timestamp,
-            unreadCount: c.unreadCount + 1,
-          }
-          : c
-      )
-    );
+    try {
+      const res = await messagesApi.sendMessage(messageData);
+      if (res.success) {
+        // Optimistic update
+        const resAll = await messagesApi.getAll();
+        if (resAll.success) setConversations(resAll.conversations);
+      }
+    } catch (e) { console.error(e); }
   };
 
   // Coupon handlers
-  const handleCreateCoupon = (newCoupon: Omit<Coupon, 'id' | 'createdDate' | 'usageCount' | 'usedBy'>) => {
-    const coupon: Coupon = {
-      ...newCoupon,
-      id: Date.now().toString(),
-      createdDate: new Date().toISOString(),
-      usageCount: 0,
-      usedBy: [], // Initialize empty array
-    };
-
-    setCoupons((prev) => {
-      const updated = [coupon, ...prev];
-      localStorage.setItem('coupons', JSON.stringify(updated));
-      return updated;
-    });
-
-    console.log('✅ Coupon created:', coupon);
+  const handleCreateCoupon = async (newCoupon: Omit<Coupon, 'id' | 'createdDate' | 'usageCount' | 'usedBy'>) => {
+    try {
+      const res = await couponsApi.create(newCoupon);
+      if (res.success && res.coupon) {
+        setCoupons((prev) => [res.coupon, ...prev]);
+        console.log('✅ Coupon created via API:', res.coupon);
+      }
+    } catch (e) { console.error(e); }
   };
 
   const handleApplyCoupon = (code: string, userId?: string): { success: boolean; message: string; coupon?: Coupon } => {
@@ -491,32 +422,48 @@ const App: React.FC = () => {
     console.log('🗑️ Coupon removed');
   };
 
-  const handleToggleCouponStatus = (couponId: string) => {
-    setCoupons((prev) =>
-      prev.map((c) => (c.id === couponId ? { ...c, isActive: !c.isActive } : c))
-    );
+  const handleToggleCouponStatus = async (couponId: string) => {
+    try {
+      const res = await couponsApi.toggleStatus(couponId);
+      if (res.success) {
+        setCoupons((prev) =>
+          prev.map((c) => (c.id === couponId ? { ...c, isActive: !c.isActive } : c))
+        );
+      }
+    } catch (e) { console.error(e); }
   };
 
-  const handleDeleteCoupon = (couponId: string) => {
-    setCoupons((prev) => prev.filter((c) => c.id !== couponId));
-    // If deleted coupon was applied, remove it
-    if (appliedCoupon?.id === couponId) {
-      setAppliedCoupon(null);
-    }
+  const handleDeleteCoupon = async (couponId: string) => {
+    try {
+      if (confirm('Delete this coupon?')) {
+        await couponsApi.delete(couponId);
+        setCoupons((prev) => prev.filter((c) => c.id !== couponId));
+        if (appliedCoupon?.id === couponId) {
+          setAppliedCoupon(null);
+        }
+      }
+    } catch (e) { console.error(e); }
   };
 
-  const handleIncrementCouponUsage = (couponId: string, userId: string) => {
-    setCoupons((prev) =>
-      prev.map((c) =>
-        c.id === couponId
-          ? {
-            ...c,
-            usageCount: c.usageCount + 1,
-            usedBy: [...(c.usedBy || []), userId]  // Add user to usedBy array
-          }
-          : c
-      )
-    );
+  const handleIncrementCouponUsage = async (couponId: string, userId: string) => {
+    try {
+      const res = await couponsApi.useCoupon(couponId);
+      if (res.success) {
+        setCoupons((prev) =>
+          prev.map((c) =>
+            c.id === couponId
+              ? {
+                ...c,
+                usageCount: c.usageCount + 1,
+                // userId might be needed for local display until refresh, but api handles backend
+                usedBy: [...(c.usedBy || []), userId]
+              }
+              : c
+          )
+        );
+        console.log('✅ Coupon usage recorded via API');
+      }
+    } catch (e) { console.error('Failed to record coupon usage', e); }
   };
 
   return (
