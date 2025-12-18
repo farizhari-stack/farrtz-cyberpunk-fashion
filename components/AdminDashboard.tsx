@@ -7,7 +7,7 @@ import {
     Calendar, CreditCard, ChevronDown, Filter, Truck, Box, Eye, Zap, Image as ImageIcon, MessageSquare, Ticket, Link
 } from 'lucide-react';
 import { User, Order, Product, PageType, Feedback, ChatConversation, Coupon } from '../types';
-import { authService } from '../services/auth';
+import { authService } from '../services/supabaseAuth';
 import { productService } from '../services/productService';
 import AdminFeedbackChat from './AdminFeedbackChat';
 import AdminCouponManager from './AdminCouponManager';

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { motion as framerMotion } from 'framer-motion';
 import { PageType, User } from '../types';
 import ForgotPasswordModal from './ForgotPasswordModal';
-import { authService } from '../services/auth';
+import { authService } from '../services/supabaseAuth';
 
 const motion = framerMotion as any;
 

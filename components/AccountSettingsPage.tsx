@@ -6,7 +6,7 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import AccountSidebar from './AccountSidebar';
 import { PageType, User } from '../types';
-import { authService } from '../services/auth';
+import { authService } from '../services/supabaseAuth';
 
 const motion = framerMotion as any;
 

@@ -5,7 +5,7 @@ import { ShoppingBag, Truck, Check, Package, Calendar, MapPin, CreditCard, X, Ch
 import Navbar from './Navbar';
 import AccountSidebar from './AccountSidebar';
 import { PageType, User, Order } from '../types';
-import { authService } from '../services/auth';
+import { authService } from '../services/supabaseAuth';
 
 const motion = framerMotion as any;
 

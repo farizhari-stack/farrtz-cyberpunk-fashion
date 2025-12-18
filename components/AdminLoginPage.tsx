@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { motion as framerMotion } from 'framer-motion';
 import { User } from '../types';
-import { authService } from '../services/auth';
+import { authService } from '../services/supabaseAuth';
 
 const motion = framerMotion as any;
 
@@ -26,11 +26,9 @@ const AdminLoginPage: React.FC<AdminLoginPageProps> = ({ onLoginSuccess }) => {
 
             if (result.success && result.user) {
                 onLoginSuccess(result.user);
-            } else {
-                setError(result.message || 'Admin login failed');
             }
-        } catch (err) {
-            setError('An unexpected error occurred.');
+        } catch (err: any) {
+            setError(err.message || 'Invalid credentials or unauthorized access');
         } finally {
             setIsLoading(false);
         }
