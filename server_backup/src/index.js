@@ -34,26 +34,6 @@ app.use('/api/coupons', couponRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/feedback', feedbackRoutes);
 
-// Seed route
-const { seedDatabase } = require('../prisma/seed');
-app.get('/api/seed', async (req, res) => {
-    try {
-        const result = await seedDatabase();
-        res.json({
-            success: true,
-            message: 'Database seeded successfully!',
-            data: result
-        });
-    } catch (error) {
-        console.error('Seed error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to seed database',
-            error: error.message
-        });
-    }
-});
-
 // Health check
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'FARRTZ Backend is running!' });
