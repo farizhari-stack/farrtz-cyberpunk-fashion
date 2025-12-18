@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion as framerMotion } from 'framer-motion';
 import { User } from '../types';
-import { authService } from '../services/supabaseAuth';
+import { authService } from '../services/auth';
 
 const motion = framerMotion as any;
 

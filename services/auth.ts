@@ -1,220 +1,221 @@
 /**
- * Auth Service - Updated to use Backend API
- * Maintains FULL backward compatibility with existing components (sync calls)
+ * Auth Service - localStorage Version (No Backend)
+ * All data stored in browser localStorage
  */
 
 import { User, Order } from '../types';
-import { authApi, ordersApi, usersApi, getToken, removeToken } from './api';
-import emailjs from '@emailjs/browser';
 
 const USERS_KEY = 'farrtz_users_db';
 const ORDERS_KEY = 'farrtz_orders_db';
 const ADMIN_SESSION_KEY = 'farrtz_admin_session';
 const USER_SESSION_KEY = 'farrtz_user_session';
 
-// --- KONFIGURASI EMAILJS (untuk password reset emails) ---
-const EMAILJS_SERVICE_ID = 'service_jhajp2d';
-const EMAILJS_TEMPLATE_ID = 'template_fmc5xpj';
-const EMAILJS_PUBLIC_KEY = 'eMXPedz89SSbeq6zC';
-
-// Simulate a database delay for realism
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Initialize orders from API on module load
-// Initialize orders from API on module load
-const initializeOrders = async () => {
-  // No-op or just log
-  console.log("Orders initialized via API");
+// Default admin account
+const DEFAULT_ADMIN: User = {
+  id: 'admin-001',
+  firstName: 'System',
+  lastName: 'Admin',
+  email: 'admin@gmail.com',
+  password: 'admin123',
+  avatar: 'https://cdn-icons-png.flaticon.com/512/2942/2942813.png',
+  wishlist: [],
+  isAdmin: true
 };
 
-// Auto-initialize
-initializeOrders();
+// Initialize users with default admin
+const initializeUsers = (): User[] => {
+  const stored = localStorage.getItem(USERS_KEY);
+  if (stored) {
+    const users = JSON.parse(stored);
+    // Ensure admin exists
+    if (!users.find((u: User) => u.email === 'admin@gmail.com')) {
+      users.push(DEFAULT_ADMIN);
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    }
+    return users;
+  }
+  localStorage.setItem(USERS_KEY, JSON.stringify([DEFAULT_ADMIN]));
+  return [DEFAULT_ADMIN];
+};
+
+// Simulate delay
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const authService = {
-  // --- DATABASE OPERATIONS ---
-
+  // Get all users
   getUsers: (): User[] => {
-    // Deprecated: Users should be fetched via API
-    return [];
+    return initializeUsers();
   },
 
-  saveUser: async (user: User) => {
-    // Direct API call via usersApi or authApi if needed,
-    // but typically user update happens via specific endpoints.
-    // We will assume this legacy method was for local dev.
-    console.warn("saveUser is deprecated. Use usersApi.update()");
-    // If the user has an ID, attempt to update via API
-    if (user.id) {
-      try {
-        await usersApi.update(user.id, user);
-      } catch (error) {
-        console.error("Failed to update user via API:", error);
-      }
+  // Save/update user
+  saveUser: (user: User): User => {
+    const users = authService.getUsers();
+    const index = users.findIndex(u => u.id === user.id);
+    if (index >= 0) {
+      users[index] = user;
+    } else {
+      users.push(user);
     }
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
     return user;
   },
 
-  // --- ORDER OPERATIONS ---
-
-  createOrder: async (order: Order): Promise<{ success: boolean; message?: string }> => {
-    try {
-      const response = await ordersApi.create({
-        items: order.items,
-        shippingDetails: order.shippingDetails,
-        totalAmount: order.totalAmount,
-        paymentMethod: order.paymentMethod,
-        paymentProofUrl: order.paymentProofUrl
-      });
-
-      if (response.success) {
-        return { success: true };
-      }
-      return { success: false, message: response.message || 'Failed to create order' };
-    } catch (error) {
-      console.error('Order creation failed:', error);
-      return { success: false, message: 'Network error' };
-    }
-  },
-
-  getOrdersByUser: async (userId: string): Promise<Order[]> => {
-    try {
-      const response = await ordersApi.getAll();
-      if (response.success && response.orders) {
-        return response.orders.filter((o: Order) => o.userId === userId);
-      }
-    } catch (error) {
-      console.error('Failed to get user orders:', error);
-    }
-    return [];
-  },
-
-  // Async version
-  getAllOrdersAsync: async (): Promise<Order[]> => {
-    try {
-      const response = await ordersApi.getAll();
-      if (response.success && response.orders) {
-        return response.orders;
-      }
-    } catch (error) {
-      console.error('Failed to fetch orders:', error);
-    }
-    return [];
-  },
-
-  // Deprecated sync version - kept for temporary compatibility but returns empty
-  getAllOrders: (): Order[] => {
-    console.warn("authService.getAllOrders() is deprecated. Use getAllOrdersAsync().");
-    return [];
-  },
-
-  updateOrderStatus: async (orderId: string, status: Order['status']): Promise<boolean> => {
-    try {
-      const response = await ordersApi.updateStatus(orderId, status);
-      return response.success;
-    } catch (error) {
-      console.error('Failed to update order status:', error);
-      return false;
-    }
-  },
-
-  // --- AUTH OPERATIONS ---
-
+  // Register new user
   async register(firstName: string, lastName: string, email: string, password: string): Promise<{ success: boolean; message?: string; user?: User }> {
-    await delay(800);
+    await delay(500);
 
-    try {
-      const response = await authApi.register(firstName, lastName, email, password);
-      if (response.success && response.user) {
-        authService.setUserSession(response.user);
-        return { success: true, user: response.user };
-      }
-      return { success: false, message: response.message };
-    } catch (error) {
-      // Fallback to localStorage registration
-      const users = authService.getUsers();
-
-      if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
-        return { success: false, message: 'Email already registered.' };
-      }
-
-      const newUser: User = {
-        id: Date.now().toString(),
-        firstName,
-        lastName,
-        email,
-        password,
-        avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${firstName}`,
-        wishlist: [],
-        isAdmin: false
-      };
-
-      authService.saveUser(newUser);
-      authService.setUserSession(newUser);
-      return { success: true, user: newUser };
+    const users = authService.getUsers();
+    if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+      return { success: false, message: 'Email already registered.' };
     }
+
+    const newUser: User = {
+      id: Date.now().toString(),
+      firstName,
+      lastName,
+      email,
+      password,
+      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${firstName}`,
+      wishlist: [],
+      isAdmin: false
+    };
+
+    authService.saveUser(newUser);
+    authService.setUserSession(newUser);
+    return { success: true, user: newUser };
   },
 
+  // User login
   async login(email: string, password: string): Promise<{ success: boolean; message?: string; user?: User }> {
-    await delay(800);
+    await delay(500);
 
-    try {
-      const response = await authApi.login(email, password);
-      if (response.success && response.user) {
-        authService.setUserSession(response.user);
-        return { success: true, user: response.user };
-      }
-      return { success: false, message: response.message };
-    } catch (error) {
-      // Fallback to localStorage login
-      const users = authService.getUsers();
-      const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+    const users = authService.getUsers();
+    const user = users.find(u =>
+      u.email.toLowerCase() === email.toLowerCase() && u.password === password
+    );
 
-      if (!user) {
-        return { success: false, message: 'Invalid email or password.' };
-      }
-
-      if (user.isAdmin) {
-        return { success: false, message: 'Please use admin login page.' };
-      }
-
-      if (!user.wishlist) user.wishlist = [];
-      authService.setUserSession(user);
-      return { success: true, user };
+    if (!user) {
+      return { success: false, message: 'Invalid email or password.' };
     }
+
+    if (user.isAdmin) {
+      return { success: false, message: 'Please use admin login page.' };
+    }
+
+    authService.setUserSession(user);
+    return { success: true, user };
   },
 
+  // Admin login
   async adminLogin(email: string, password: string): Promise<{ success: boolean; message?: string; user?: User }> {
     await delay(300);
 
-    try {
-      // Call the backend API for admin login
-      const response = await authApi.adminLogin(email, password);
+    const users = authService.getUsers();
+    const user = users.find(u =>
+      u.email.toLowerCase() === email.toLowerCase() &&
+      u.password === password &&
+      u.isAdmin
+    );
 
-      if (response.success && response.user) {
-        const adminUser: User = {
-          id: response.user.id || 'admin-master',
-          firstName: response.user.firstName || 'System',
-          lastName: response.user.lastName || 'Admin',
-          email: response.user.email || email,
-          avatar: response.user.avatar || 'https://cdn-icons-png.flaticon.com/512/2942/2942813.png',
-          wishlist: response.user.wishlist || [],
-          isAdmin: true
-        };
-        authService.setAdminSession(adminUser);
-        console.log('✅ Admin logged in successfully, token stored');
-        return { success: true, user: adminUser };
-      }
-
-      return { success: false, message: response.message || 'Invalid admin credentials.' };
-    } catch (error) {
-      console.error('Admin login error:', error);
-      return { success: false, message: 'Login failed. Please try again.' };
+    if (!user) {
+      return { success: false, message: 'Invalid admin credentials.' };
     }
+
+    authService.setAdminSession(user);
+    return { success: true, user };
   },
 
-  async updateUser(updatedUser: User): Promise<{ success: boolean; user?: User }> {
+  // Check if admin exists
+  async checkAdminExists(): Promise<boolean> {
+    const users = authService.getUsers();
+    return users.some(u => u.isAdmin);
+  },
+
+  // Admin registration
+  async adminRegister(userData: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    adminCode: string;
+  }): Promise<{ success: boolean; user?: User; message?: string; autoLogin?: boolean }> {
     await delay(500);
 
+    // Verify admin code
+    const SETUP_CODE = 'FARRTZ_SETUP_2024';
+    const ADMIN_CODE = 'FARRTZ_ADMIN_2024';
+    const adminExists = await this.checkAdminExists();
+    const requiredCode = adminExists ? ADMIN_CODE : SETUP_CODE;
+
+    if (userData.adminCode !== requiredCode) {
+      throw new Error('Invalid registration code');
+    }
+
+    const users = authService.getUsers();
+    if (users.find(u => u.email.toLowerCase() === userData.email.toLowerCase())) {
+      throw new Error('Email already registered');
+    }
+
+    const newAdmin: User = {
+      id: Date.now().toString(),
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      email: userData.email,
+      password: userData.password,
+      avatar: 'https://cdn-icons-png.flaticon.com/512/2942/2942813.png',
+      wishlist: [],
+      isAdmin: true
+    };
+
+    authService.saveUser(newAdmin);
+    authService.setAdminSession(newAdmin);
+
+    return {
+      success: true,
+      user: newAdmin,
+      autoLogin: true,
+      message: 'Admin created successfully!'
+    };
+  },
+
+  // Forgot password (simulated)
+  async adminForgotPassword(email: string): Promise<{ success: boolean; message?: string }> {
+    await delay(500);
+
+    const users = authService.getUsers();
+    const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.isAdmin);
+
+    if (!user) {
+      throw new Error('Admin email not found');
+    }
+
+    // In localStorage version, just show the password
+    alert(`[DEV MODE] Your password is: ${user.password}`);
+    return { success: true, message: 'Password shown in alert (dev mode)' };
+  },
+
+  // Update password
+  async adminUpdatePassword(newPassword: string): Promise<{ success: boolean; message?: string }> {
+    await delay(300);
+
+    const admin = authService.getCurrentAdminSession();
+    if (!admin) {
+      throw new Error('Not logged in');
+    }
+
+    const users = authService.getUsers();
+    const index = users.findIndex(u => u.id === admin.id);
+    if (index >= 0) {
+      users[index].password = newPassword;
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    }
+
+    return { success: true, message: 'Password updated!' };
+  },
+
+  // Update user
+  async updateUser(updatedUser: User): Promise<{ success: boolean; user?: User }> {
+    await delay(300);
     authService.saveUser(updatedUser);
 
     if (updatedUser.isAdmin) {
@@ -226,75 +227,7 @@ export const authService = {
     return { success: true, user: updatedUser };
   },
 
-  logoutUser: () => {
-    sessionStorage.removeItem(USER_SESSION_KEY);
-    removeToken();
-  },
-
-  logoutAdmin: () => {
-    sessionStorage.removeItem(ADMIN_SESSION_KEY);
-    removeToken();
-  },
-
-  // --- PASSWORD RESET LOGIC ---
-
-  async initiatePasswordReset(email: string): Promise<{ success: boolean; message?: string }> {
-    await delay(1000);
-
-    try {
-      const response = await authApi.forgotPassword(email);
-      if (response.success) {
-        if (response.devCode) {
-          console.log(`[AUTH] Dev mode - Reset code: ${response.devCode}`);
-          alert(`[DEV MODE] Reset code: ${response.devCode}`);
-        }
-        return { success: true, message: response.message };
-      }
-      return { success: false, message: response.message };
-    } catch (error) {
-      return { success: false, message: 'Network error. Please try again.' };
-    }
-  },
-
-  async validateResetCode(email: string, code: string): Promise<{ success: boolean; message?: string }> {
-    await delay(800);
-
-    try {
-      const response = await authApi.validateResetCode(email, code);
-      return { success: response.success, message: response.message };
-    } catch (error) {
-      return { success: false, message: 'Validation failed. Please try again.' };
-    }
-  },
-
-  async completePasswordReset(email: string, newPassword: string): Promise<{ success: boolean; message?: string }> {
-    await delay(1000);
-
-    // Hardcoded Admin
-    if (email === 'admin@gmail.com') {
-      return { success: false, message: 'Cannot reset hardcoded admin password in demo.' };
-    }
-
-    try {
-      const response = await authApi.resetPassword(email, newPassword);
-      return { success: response.success, message: response.message };
-    } catch (error) {
-      // Fallback to localStorage
-      const users = authService.getUsers();
-      const index = users.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
-
-      if (index === -1) {
-        return { success: false, message: 'User not found.' };
-      }
-
-      users[index].password = newPassword;
-      localStorage.setItem(USERS_KEY, JSON.stringify(users));
-      return { success: true, message: 'Password updated successfully' };
-    }
-  },
-
-  // --- SESSION MANAGEMENT ---
-
+  // Session management
   setUserSession: (user: User) => {
     const safeUser = { ...user };
     delete safeUser.password;
@@ -308,44 +241,65 @@ export const authService = {
   },
 
   getCurrentUserSession: (): User | null => {
-    const sessionStr = sessionStorage.getItem(USER_SESSION_KEY);
-    return sessionStr ? JSON.parse(sessionStr) : null;
+    const data = sessionStorage.getItem(USER_SESSION_KEY);
+    return data ? JSON.parse(data) : null;
   },
 
   getCurrentAdminSession: (): User | null => {
-    const sessionStr = sessionStorage.getItem(ADMIN_SESSION_KEY);
-    return sessionStr ? JSON.parse(sessionStr) : null;
+    const data = sessionStorage.getItem(ADMIN_SESSION_KEY);
+    return data ? JSON.parse(data) : null;
   },
 
   getCurrentUser: (): User | null => {
     return authService.getCurrentAdminSession() || authService.getCurrentUserSession();
   },
 
-  isAuthenticated: (): boolean => {
-    return !!getToken();
+  logout: () => {
+    sessionStorage.removeItem(USER_SESSION_KEY);
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
   },
 
-  async refreshCurrentUser(): Promise<User | null> {
-    if (!getToken()) return null;
+  logoutUser: () => {
+    sessionStorage.removeItem(USER_SESSION_KEY);
+  },
 
-    try {
-      const response = await authApi.getCurrentUser();
-      if (response.success && response.user) {
-        if (response.user.isAdmin) {
-          authService.setAdminSession(response.user);
-        } else {
-          authService.setUserSession(response.user);
-        }
-        return response.user;
-      }
-    } catch (error) {
-      console.log('Failed to refresh user from API');
+  logoutAdmin: () => {
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  },
+
+  // Orders
+  createOrder: async (order: Order): Promise<{ success: boolean; message?: string }> => {
+    await delay(300);
+    const orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
+    orders.push({ ...order, id: Date.now().toString(), createdAt: new Date().toISOString() });
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+    return { success: true };
+  },
+
+  getAllOrders: (): Order[] => {
+    return JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
+  },
+
+  getAllOrdersAsync: async (): Promise<Order[]> => {
+    await delay(100);
+    return authService.getAllOrders();
+  },
+
+  getOrdersByUser: async (userId: string): Promise<Order[]> => {
+    await delay(100);
+    const orders = authService.getAllOrders();
+    return orders.filter(o => o.userId === userId);
+  },
+
+  updateOrderStatus: async (orderId: string, status: Order['status']): Promise<boolean> => {
+    await delay(200);
+    const orders = authService.getAllOrders();
+    const index = orders.findIndex(o => o.id === orderId);
+    if (index >= 0) {
+      orders[index].status = status;
+      localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+      return true;
     }
-    return null;
-  },
-
-  // Refresh orders from API
-  refreshOrders: async (): Promise<void> => {
-    await initializeOrders();
+    return false;
   }
 };

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { motion as framerMotion } from 'framer-motion';
 import { PageType, User } from '../types';
-import { authService } from '../services/supabaseAuth';
+import { authService } from '../services/auth';
 import { CheckCircle } from 'lucide-react';
 
 const motion = framerMotion as any;

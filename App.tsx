@@ -17,9 +17,9 @@ import AdminDashboard from './components/AdminDashboard';
 import FeedbackSection from './components/FeedbackSection';
 import ChatWidget from './components/ChatWidget';
 import { PageType, Product, CartItem, User, Feedback, ChatConversation, ChatMessage, Coupon } from './types';
-import { authService } from './services/supabaseAuth';
+import { authService } from './services/auth';
 import { productService } from './services/productService';
-import { feedbackService, messagesService, couponsService } from './services/supabaseServices';
+import { feedbackService, messagesService, couponsService } from './services/localServices';
 import { validateCoupon } from './utils/couponUtils';
 
 
@@ -48,12 +48,11 @@ const UserApp: React.FC<UserAppProps> = ({ onSubmitFeedback, conversations, onSe
 
   useEffect(() => {
     productService.initialize();
-    authService.getCurrentUser().then((currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-      }
-      setIsLoading(false);
-    });
+    const currentUser = authService.getCurrentUser();
+    if (currentUser) {
+      setUser(currentUser);
+    }
+    setIsLoading(false);
   }, []);
 
   const handleLoginSuccess = (user: User) => {
@@ -244,12 +243,11 @@ const AdminApp: React.FC<AdminAppProps> = ({ feedbacks, conversations, coupons, 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    authService.getCurrentUser().then((currentAdmin) => {
-      if (currentAdmin?.isAdmin) {
-        setAdminUser(currentAdmin);
-      }
-      setIsLoading(false);
-    });
+    const currentAdmin = authService.getCurrentUser();
+    if (currentAdmin?.isAdmin) {
+      setAdminUser(currentAdmin);
+    }
+    setIsLoading(false);
   }, []);
 
 
@@ -366,7 +364,7 @@ const App: React.FC = () => {
       userId,
       userName,
       message,
-      sender: 'user',
+      sender: 'user' as const,
     };
 
     try {
@@ -383,7 +381,7 @@ const App: React.FC = () => {
     const messageData = {
       userId,
       message,
-      sender: 'admin',
+      sender: 'admin' as const,
     };
 
     try {

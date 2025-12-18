@@ -6,7 +6,7 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import SizeChartModal from './SizeChartModal';
 import { Product, PageType, User } from '../types';
-import { authService } from '../services/supabaseAuth';
+import { authService } from '../services/auth';
 
 const motion = framerMotion as any;
 

@@ -1,8 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion as framerMotion } from 'framer-motion';
-import { authService } from '../services/supabaseAuth';
-import { supabase } from '../src/lib/supabase';
+import { authService } from '../services/auth';
 
 const motion = framerMotion as any;
 
@@ -16,20 +15,9 @@ const AdminResetPasswordPage: React.FC<AdminResetPasswordPageProps> = ({ onReset
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [isValidSession, setIsValidSession] = useState(false);
-    const [checkingSession, setCheckingSession] = useState(true);
 
-    useEffect(() => {
-        // Check if user came from a valid reset link
-        const checkSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                setIsValidSession(true);
-            }
-            setCheckingSession(false);
-        };
-        checkSession();
-    }, []);
+    // For localStorage version, we always allow password reset
+    const isValidSession = true;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -64,14 +52,6 @@ const AdminResetPasswordPage: React.FC<AdminResetPasswordPageProps> = ({ onReset
             setIsLoading(false);
         }
     };
-
-    if (checkingSession) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-red-950 via-purple-950 to-gray-900 flex items-center justify-center">
-                <div className="text-white tech-font">Verifying reset link...</div>
-            </div>
-        );
-    }
 
     if (!isValidSession) {
         return (

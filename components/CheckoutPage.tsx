@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 import { motion as framerMotion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, Menu, ArrowLeft, Tag, Plus, CheckCircle, CreditCard, Banknote, Upload, Copy, Edit2, AlertTriangle, Loader } from 'lucide-react';
 import { PageType, CartItem, User, Order, Coupon } from '../types';
-import { authService } from '../services/supabaseAuth';
+import { authService } from '../services/auth';
 import { calculateDiscount } from '../utils/couponUtils';
 
 const motion = framerMotion as any;

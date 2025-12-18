@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion as framerMotion, AnimatePresence } from 'framer-motion';
 import { X, ArrowLeft, Check, Timer, RotateCcw } from 'lucide-react';
-import { authService } from '../services/supabaseAuth';
+import { authService } from '../services/auth';
 
 const motion = framerMotion as any;
 
