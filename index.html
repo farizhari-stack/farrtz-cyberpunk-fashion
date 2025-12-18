@@ -88,6 +88,17 @@
 
 <body>
   <div id="root"></div>
+  <script>
+      // Handle redirects from 404.html for SPA routing on GitHub Pages
+      (function () {
+        var redirect = sessionStorage.getItem('redirect');
+        if (redirect) {
+          sessionStorage.removeItem('redirect');
+          // Push the stored path to history so React Router can handle it
+          window.history.replaceState(null, null, redirect);
+        }
+      })();
+  </script>
   <script type="module" src="/index.tsx"></script>
 </body>
 

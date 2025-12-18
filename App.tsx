@@ -467,7 +467,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/farrtz-cyberpunk-fashion">
       <Routes>
         <Route
           path="/admin"

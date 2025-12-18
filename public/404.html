@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+    <script>
+        // Single Page App redirect for GitHub Pages
+        // This script redirects 404 pages to index.html with the original path
+        // so React Router can handle the routing
+        const path = window.location.pathname;
+        const search = window.location.search;
+        const hash = window.location.hash;
+
+        // Store the path in sessionStorage so the app can read it
+        sessionStorage.setItem('redirect', path + search + hash);
+
+        // Redirect to the base path (homepage)
+        window.location.replace('/farrtz-cyberpunk-fashion/');
+    </script>
+</head>
+
+<body>
+    <p>Redirecting...</p>
+</body>
+
+</html>
