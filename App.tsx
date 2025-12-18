@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Home from './components/Home';
 import LoginPage from './components/LoginPage';
 import AdminLoginPage from './components/AdminLoginPage';
+import AdminResetPasswordPage from './components/AdminResetPasswordPage';
 import RegisterPage from './components/RegisterPage';
 import ProductDetailPage from './components/ProductDetailPage';
 import CartPage from './components/CartPage';
@@ -16,9 +17,9 @@ import AdminDashboard from './components/AdminDashboard';
 import FeedbackSection from './components/FeedbackSection';
 import ChatWidget from './components/ChatWidget';
 import { PageType, Product, CartItem, User, Feedback, ChatConversation, ChatMessage, Coupon } from './types';
-import { authService } from './services/auth';
+import { authService } from './services/supabaseAuth';
 import { productService } from './services/productService';
-import { feedbackApi, messagesApi, couponsApi } from './services/api';
+import { feedbackService, messagesService, couponsService } from './services/supabaseServices';
 import { validateCoupon } from './utils/couponUtils';
 
 
@@ -47,11 +48,12 @@ const UserApp: React.FC<UserAppProps> = ({ onSubmitFeedback, conversations, onSe
 
   useEffect(() => {
     productService.initialize();
-    const currentUser = authService.getCurrentUserSession();
-    if (currentUser) {
-      setUser(currentUser);
-    }
-    setIsLoading(false);
+    authService.getCurrentUser().then((currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+      }
+      setIsLoading(false);
+    });
   }, []);
 
   const handleLoginSuccess = (user: User) => {
@@ -59,8 +61,8 @@ const UserApp: React.FC<UserAppProps> = ({ onSubmitFeedback, conversations, onSe
     setCurrentPage('home');
   };
 
-  const handleLogout = () => {
-    authService.logoutUser();
+  const handleLogout = async () => {
+    await authService.logout();
     setUser(null);
     setCurrentPage('login');
   };
@@ -242,11 +244,12 @@ const AdminApp: React.FC<AdminAppProps> = ({ feedbacks, conversations, coupons, 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const currentAdmin = authService.getCurrentAdminSession();
-    if (currentAdmin) {
-      setAdminUser(currentAdmin);
-    }
-    setIsLoading(false);
+    authService.getCurrentUser().then((currentAdmin) => {
+      if (currentAdmin?.isAdmin) {
+        setAdminUser(currentAdmin);
+      }
+      setIsLoading(false);
+    });
   }, []);
 
 
@@ -254,8 +257,8 @@ const AdminApp: React.FC<AdminAppProps> = ({ feedbacks, conversations, coupons, 
     setAdminUser(user);
   };
 
-  const handleAdminLogout = () => {
-    authService.logoutAdmin();
+  const handleAdminLogout = async () => {
+    await authService.logout();
     setAdminUser(null);
   };
 
@@ -301,14 +304,14 @@ const App: React.FC = () => {
     const loadData = async () => {
       try {
         const [fbRes, msgRes, cpnRes] = await Promise.all([
-          feedbackApi.getAll(),
-          messagesApi.getAll(),
-          couponsApi.getAll()
+          feedbackService.getAllFeedback(),
+          messagesService.getAllMessages(),
+          couponsService.getAllCoupons()
         ]);
 
-        if (fbRes.success && fbRes.feedbacks) setFeedbacks(fbRes.feedbacks);
-        if (msgRes.success && msgRes.conversations) setConversations(msgRes.conversations);
-        if (cpnRes.success && cpnRes.coupons) setCoupons(cpnRes.coupons);
+        setFeedbacks(fbRes || []);
+        setConversations(msgRes || []);
+        setCoupons(cpnRes || []);
       } catch (error) {
         console.error("Failed to load initial app data", error);
       }
@@ -334,9 +337,9 @@ const App: React.FC = () => {
     };
 
     try {
-      const res = await feedbackApi.create(feedbackData);
-      if (res.success && res.feedback) {
-        setFeedbacks((prev) => [res.feedback, ...prev]);
+      const feedback = await feedbackService.createFeedback(feedbackData);
+      if (feedback) {
+        setFeedbacks((prev) => [feedback, ...prev]);
         console.log('✅ Feedback submitted via API!');
       }
     } catch (e) {
@@ -348,8 +351,8 @@ const App: React.FC = () => {
 
   const handleUpdateFeedbackStatus = async (feedbackId: string, status: Feedback['status']) => {
     try {
-      const res = await feedbackApi.updateStatus(feedbackId, status);
-      if (res.success) {
+      const feedback = await feedbackService.updateFeedbackStatus(feedbackId, status);
+      if (feedback) {
         setFeedbacks((prev) =>
           prev.map((f) => (f.id === feedbackId ? { ...f, status } : f))
         );
@@ -367,11 +370,11 @@ const App: React.FC = () => {
     };
 
     try {
-      const res = await messagesApi.sendMessage(messageData);
-      if (res.success) {
+      const result = await messagesService.sendMessage(messageData);
+      if (result) {
         // Optimistic update or wait for poll
-        const resAll = await messagesApi.getAll();
-        if (resAll.success) setConversations(resAll.conversations);
+        const messages = await messagesService.getAllMessages();
+        if (messages) setConversations(messages);
       }
     } catch (e) { console.error(e); }
   };
@@ -384,11 +387,11 @@ const App: React.FC = () => {
     };
 
     try {
-      const res = await messagesApi.sendMessage(messageData);
-      if (res.success) {
+      const result = await messagesService.sendMessage(messageData);
+      if (result) {
         // Optimistic update
-        const resAll = await messagesApi.getAll();
-        if (resAll.success) setConversations(resAll.conversations);
+        const messages = await messagesService.getAllMessages();
+        if (messages) setConversations(messages);
       }
     } catch (e) { console.error(e); }
   };
@@ -396,10 +399,10 @@ const App: React.FC = () => {
   // Coupon handlers
   const handleCreateCoupon = async (newCoupon: Omit<Coupon, 'id' | 'createdDate' | 'usageCount' | 'usedBy'>) => {
     try {
-      const res = await couponsApi.create(newCoupon);
-      if (res.success && res.coupon) {
-        setCoupons((prev) => [res.coupon, ...prev]);
-        console.log('✅ Coupon created via API:', res.coupon);
+      const coupon = await couponsService.createCoupon(newCoupon);
+      if (coupon) {
+        setCoupons((prev) => [coupon, ...prev]);
+        console.log('✅ Coupon created via API:', coupon);
       }
     } catch (e) { console.error(e); }
   };
@@ -424,8 +427,8 @@ const App: React.FC = () => {
 
   const handleToggleCouponStatus = async (couponId: string) => {
     try {
-      const res = await couponsApi.toggleStatus(couponId);
-      if (res.success) {
+      const coupon = await couponsService.toggleCouponStatus(couponId);
+      if (coupon) {
         setCoupons((prev) =>
           prev.map((c) => (c.id === couponId ? { ...c, isActive: !c.isActive } : c))
         );
@@ -436,7 +439,7 @@ const App: React.FC = () => {
   const handleDeleteCoupon = async (couponId: string) => {
     try {
       if (confirm('Delete this coupon?')) {
-        await couponsApi.delete(couponId);
+        await couponsService.deleteCoupon(couponId);
         setCoupons((prev) => prev.filter((c) => c.id !== couponId));
         if (appliedCoupon?.id === couponId) {
           setAppliedCoupon(null);
@@ -447,8 +450,8 @@ const App: React.FC = () => {
 
   const handleIncrementCouponUsage = async (couponId: string, userId: string) => {
     try {
-      const res = await couponsApi.useCoupon(couponId);
-      if (res.success) {
+      const res = await couponsService.useCoupon(couponId);
+      if (res) {
         setCoupons((prev) =>
           prev.map((c) =>
             c.id === couponId
@@ -469,6 +472,14 @@ const App: React.FC = () => {
   return (
     <BrowserRouter basename="/farrtz-cyberpunk-fashion">
       <Routes>
+        <Route
+          path="/admin/reset-password"
+          element={
+            <AdminResetPasswordPage
+              onResetSuccess={() => window.location.href = '/farrtz-cyberpunk-fashion/admin'}
+            />
+          }
+        />
         <Route
           path="/admin"
           element={

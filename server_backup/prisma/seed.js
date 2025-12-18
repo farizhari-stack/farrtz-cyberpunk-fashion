@@ -51,7 +51,7 @@ const products = [
     { title: 'Robo-Pup Graphic Tee', price: 150000, category: 'Kids', isNew: true },
 ];
 
-async function main() {
+async function seedDatabase() {
     console.log('🌱 Starting database seed...');
 
     // Create admin user
@@ -126,17 +126,20 @@ async function main() {
     console.log('');
     console.log('🎉 Database seeded successfully!');
     console.log('');
-    console.log('📋 Test Credentials:');
-    console.log('   Admin: admin@gmail.com / admin');
-    console.log('   User:  user@example.com / user123');
-    console.log('');
+
+    return { admin, user, productCount: products.length };
 }
 
-main()
-    .catch((e) => {
-        console.error('❌ Seed error:', e);
-        process.exit(1);
-    })
-    .finally(async () => {
-        await prisma.$disconnect();
-    });
+// Execute if run directly
+if (require.main === module) {
+    seedDatabase()
+        .catch((e) => {
+            console.error('❌ Seed error:', e);
+            process.exit(1);
+        })
+        .finally(async () => {
+            await prisma.$disconnect();
+        });
+}
+
+module.exports = { seedDatabase };
