@@ -141,14 +141,15 @@ export const authService = {
   }): Promise<{ success: boolean; user?: User; message?: string; autoLogin?: boolean }> {
     await delay(500);
 
-    // Verify admin code
+    // Verify admin code - accept both codes for flexibility
     const SETUP_CODE = 'FARRTZ_SETUP_2024';
     const ADMIN_CODE = 'FARRTZ_ADMIN_2024';
-    const adminExists = await this.checkAdminExists();
-    const requiredCode = adminExists ? ADMIN_CODE : SETUP_CODE;
 
-    if (userData.adminCode !== requiredCode) {
-      throw new Error('Invalid registration code');
+    // Accept either code for registration
+    const validCodes = [SETUP_CODE, ADMIN_CODE];
+
+    if (!validCodes.includes(userData.adminCode)) {
+      throw new Error(`Invalid registration code. Use: ${SETUP_CODE} or ${ADMIN_CODE}`);
     }
 
     const users = authService.getUsers();
