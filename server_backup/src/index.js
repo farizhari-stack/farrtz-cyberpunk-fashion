@@ -16,16 +16,8 @@ const app = express();
 
 // Middleware
 app.use(cors({
-    origin: [
-        'http://localhost:3000',
-        'http://localhost:3001',
-        'http://localhost:5173',
-        'https://farizhari-stack.github.io',
-        process.env.FRONTEND_URL
-    ].filter(Boolean),
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173', process.env.FRONTEND_URL].filter(Boolean),
+    credentials: true
 }));
 app.use(express.json({ limit: '10mb' })); // For payment proof images
 app.use(express.urlencoded({ extended: true }));
@@ -41,6 +33,26 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/feedback', feedbackRoutes);
+
+// Seed route
+const { seedDatabase } = require('../prisma/seed');
+app.get('/api/seed', async (req, res) => {
+    try {
+        const result = await seedDatabase();
+        res.json({
+            success: true,
+            message: 'Database seeded successfully!',
+            data: result
+        });
+    } catch (error) {
+        console.error('Seed error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to seed database',
+            error: error.message
+        });
+    }
+});
 
 // Health check
 app.get('/api/health', (req, res) => {
