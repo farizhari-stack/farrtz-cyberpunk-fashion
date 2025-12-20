@@ -4122,10 +4122,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$check$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Check$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/check.js [app-client] (ecmascript) <export default as Check>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$timer$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Timer$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/timer.js [app-client] (ecmascript) <export default as Timer>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$rotate$2d$ccw$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__RotateCcw$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/rotate-ccw.js [app-client] (ecmascript) <export default as RotateCcw>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$services$2f$auth$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/services/auth.ts [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
-;
 ;
 ;
 ;
@@ -4219,14 +4217,14 @@ const ForgotPasswordModal = ({ isOpen, onClose })=>{
         setIsLoading(true);
         setError('');
         try {
-            const result = await __TURBOPACK__imported__module__$5b$project$5d2f$services$2f$auth$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["authService"].initiatePasswordReset(email);
-            if (result.success) {
-                setStep(2);
-                setTimer(60); // Start timer
-                setCanResend(false);
-            } else {
-                setError(result.message || 'Failed to send code');
-            }
+            //   const result = await authService.initiatePasswordReset(email);
+            //   if (result.success) {
+            setStep(2);
+            setTimer(60); // Start timer
+            setCanResend(false);
+        //   } else {
+        //       setError(result.message || 'Failed to send code');
+        //   }
         } catch (err) {
             setError('An error occurred. Please try again.');
         } finally{
@@ -4242,12 +4240,12 @@ const ForgotPasswordModal = ({ isOpen, onClose })=>{
         setIsLoading(true);
         setError('');
         try {
-            const result = await __TURBOPACK__imported__module__$5b$project$5d2f$services$2f$auth$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["authService"].validateResetCode(email, code);
-            if (result.success) {
-                setStep(3);
-            } else {
-                setError(result.message || 'Invalid code');
-            }
+            //   const result = await authService.validateResetCode(email, code);
+            //   if (result.success) {
+            setStep(3);
+        //   } else {
+        //       setError(result.message || 'Invalid code');
+        //   }
         } catch (err) {
             setError('Validation failed');
         } finally{
@@ -4277,12 +4275,12 @@ const ForgotPasswordModal = ({ isOpen, onClose })=>{
         setIsLoading(true);
         setError('');
         try {
-            const result = await __TURBOPACK__imported__module__$5b$project$5d2f$services$2f$auth$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["authService"].completePasswordReset(email, newPassword);
-            if (result.success) {
-                setStep(5);
-            } else {
-                setError(result.message || 'Update failed');
-            }
+            //   const result = await authService.completePasswordReset(email, newPassword);
+            //   if (result.success) {
+            setStep(5);
+        //   } else {
+        //       setError(result.message || 'Update failed');
+        //   }
         } catch (err) {
             setError('An error occurred');
         } finally{
@@ -4354,7 +4352,7 @@ const ForgotPasswordModal = ({ isOpen, onClose })=>{
                                     }, void 0, false, {
                                         fileName: "[project]/components/ForgotPasswordModal.tsx",
                                         lineNumber: 185,
-                                        columnNumber: 16
+                                        columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                         className: "text-sm font-bold tracking-widest text-cyan-600 italic font-[Orbitron]",
@@ -4362,7 +4360,7 @@ const ForgotPasswordModal = ({ isOpen, onClose })=>{
                                     }, void 0, false, {
                                         fileName: "[project]/components/ForgotPasswordModal.tsx",
                                         lineNumber: 186,
-                                        columnNumber: 16
+                                        columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
@@ -4393,7 +4391,7 @@ const ForgotPasswordModal = ({ isOpen, onClose })=>{
                             }, void 0, false, {
                                 fileName: "[project]/components/ForgotPasswordModal.tsx",
                                 lineNumber: 193,
-                                columnNumber: 17
+                                columnNumber: 15
                             }, ("TURBOPACK compile-time value", void 0)),
                             step === 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(motion.div, {
                                 initial: {
@@ -4555,7 +4553,7 @@ const ForgotPasswordModal = ({ isOpen, onClose })=>{
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/ForgotPasswordModal.tsx",
                                                         lineNumber: 272,
-                                                        columnNumber: 25
+                                                        columnNumber: 21
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     timer > 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         children: [
@@ -4565,20 +4563,20 @@ const ForgotPasswordModal = ({ isOpen, onClose })=>{
                                                     }, void 0, true, {
                                                         fileName: "[project]/components/ForgotPasswordModal.tsx",
                                                         lineNumber: 274,
-                                                        columnNumber: 30
+                                                        columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         className: "text-red-500",
                                                         children: "Code Expired?"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/ForgotPasswordModal.tsx",
                                                         lineNumber: 276,
-                                                        columnNumber: 30
+                                                        columnNumber: 23
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/ForgotPasswordModal.tsx",
                                                 lineNumber: 271,
-                                                columnNumber: 22
+                                                columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                                 onClick: handleResendCode,
@@ -4590,14 +4588,14 @@ const ForgotPasswordModal = ({ isOpen, onClose })=>{
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/ForgotPasswordModal.tsx",
                                                         lineNumber: 285,
-                                                        columnNumber: 25
+                                                        columnNumber: 21
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     " Resend Code"
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/ForgotPasswordModal.tsx",
                                                 lineNumber: 280,
-                                                columnNumber: 22
+                                                columnNumber: 19
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, void 0, true, {
@@ -4640,7 +4638,7 @@ const ForgotPasswordModal = ({ isOpen, onClose })=>{
                                         }, void 0, false, {
                                             fileName: "[project]/components/ForgotPasswordModal.tsx",
                                             lineNumber: 307,
-                                            columnNumber: 21
+                                            columnNumber: 19
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/components/ForgotPasswordModal.tsx",
@@ -4824,12 +4822,12 @@ const ForgotPasswordModal = ({ isOpen, onClose })=>{
                                             }, void 0, false, {
                                                 fileName: "[project]/components/ForgotPasswordModal.tsx",
                                                 lineNumber: 380,
-                                                columnNumber: 23
+                                                columnNumber: 21
                                             }, ("TURBOPACK compile-time value", void 0))
                                         }, void 0, false, {
                                             fileName: "[project]/components/ForgotPasswordModal.tsx",
                                             lineNumber: 379,
-                                            columnNumber: 20
+                                            columnNumber: 19
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/components/ForgotPasswordModal.tsx",

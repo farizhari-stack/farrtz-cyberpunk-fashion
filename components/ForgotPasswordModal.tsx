@@ -17,7 +17,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
   const [otp, setOtp] = useState(['', '', '', '', '']);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  
+
   // State for logic
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -64,7 +64,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
     newOtp[index] = value;
     setOtp(newOtp);
     setError(''); // Clear error on type
-    
+
     // Auto focus next input
     if (value && index < 4) {
       const nextInput = document.getElementById(`otp-${index + 1}`);
@@ -75,84 +75,84 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
   // --- ACTIONS ---
 
   const handleSendCode = async () => {
-      if (!email) {
-          setError('Please enter your email address');
-          return;
-      }
-      setIsLoading(true);
-      setError('');
+    if (!email) {
+      setError('Please enter your email address');
+      return;
+    }
+    setIsLoading(true);
+    setError('');
 
-      try {
-          const result = await authService.initiatePasswordReset(email);
-          if (result.success) {
-              setStep(2);
-              setTimer(60); // Start timer
-              setCanResend(false);
-          } else {
-              setError(result.message || 'Failed to send code');
-          }
-      } catch (err) {
-          setError('An error occurred. Please try again.');
-      } finally {
-          setIsLoading(false);
-      }
+    try {
+      //   const result = await authService.initiatePasswordReset(email);
+      //   if (result.success) {
+      setStep(2);
+      setTimer(60); // Start timer
+      setCanResend(false);
+      //   } else {
+      //       setError(result.message || 'Failed to send code');
+      //   }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleVerifyCode = async () => {
-      const code = otp.join('');
-      if (code.length < 5) {
-          setError('Please enter the full 5-digit code');
-          return;
-      }
+    const code = otp.join('');
+    if (code.length < 5) {
+      setError('Please enter the full 5-digit code');
+      return;
+    }
 
-      setIsLoading(true);
-      setError('');
+    setIsLoading(true);
+    setError('');
 
-      try {
-          const result = await authService.validateResetCode(email, code);
-          if (result.success) {
-              setStep(3);
-          } else {
-              setError(result.message || 'Invalid code');
-          }
-      } catch (err) {
-          setError('Validation failed');
-      } finally {
-          setIsLoading(false);
-      }
+    try {
+      //   const result = await authService.validateResetCode(email, code);
+      //   if (result.success) {
+      setStep(3);
+      //   } else {
+      //       setError(result.message || 'Invalid code');
+      //   }
+    } catch (err) {
+      setError('Validation failed');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleResendCode = async () => {
-      if (!canResend) return;
-      setOtp(['', '', '', '', '']); // Clear input
-      await handleSendCode(); // Re-trigger send logic (resets timer inside)
+    if (!canResend) return;
+    setOtp(['', '', '', '', '']); // Clear input
+    await handleSendCode(); // Re-trigger send logic (resets timer inside)
   };
 
   const handleUpdatePassword = async () => {
-      if (newPassword.length < 6) {
-          setError('Password must be at least 6 characters');
-          return;
-      }
-      if (newPassword !== confirmPassword) {
-          setError('Passwords do not match');
-          return;
-      }
+    if (newPassword.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
 
-      setIsLoading(true);
-      setError('');
+    setIsLoading(true);
+    setError('');
 
-      try {
-          const result = await authService.completePasswordReset(email, newPassword);
-          if (result.success) {
-              setStep(5);
-          } else {
-              setError(result.message || 'Update failed');
-          }
-      } catch (err) {
-          setError('An error occurred');
-      } finally {
-          setIsLoading(false);
-      }
+    try {
+      //   const result = await authService.completePasswordReset(email, newPassword);
+      //   if (result.success) {
+      setStep(5);
+      //   } else {
+      //       setError(result.message || 'Update failed');
+      //   }
+    } catch (err) {
+      setError('An error occurred');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -178,25 +178,25 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                 <ArrowLeft size={20} className="text-gray-600" />
               </button>
             ) : (
-              <div></div> 
+              <div></div>
             )}
-            
+
             <div className="flex items-center gap-1">
-               <span role="img" aria-label="fox" className="text-xl">🦊</span>
-               <span className="text-sm font-bold tracking-widest text-cyan-600 italic font-[Orbitron]">FARRTZ</span>
+              <span role="img" aria-label="fox" className="text-xl">🦊</span>
+              <span className="text-sm font-bold tracking-widest text-cyan-600 italic font-[Orbitron]">FARRTZ</span>
             </div>
           </div>
 
           <div className="px-8 pb-8 pt-2">
             {/* Error Banner */}
             {error && (
-                <motion.div 
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mb-4 bg-red-50 text-red-600 text-xs font-bold p-3 rounded-lg border border-red-100"
-                >
-                    {error}
-                </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-4 bg-red-50 text-red-600 text-xs font-bold p-3 rounded-lg border border-red-100"
+              >
+                {error}
+              </motion.div>
             )}
 
             {/* Step 1: Email Input */}
@@ -220,7 +220,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Email address"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" 
+                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
 
@@ -258,9 +258,9 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                       value={digit}
                       onChange={(e) => handleOtpChange(idx, e.target.value)}
                       onKeyDown={(e) => {
-                          if (e.key === 'Backspace' && !digit && idx > 0) {
-                              document.getElementById(`otp-${idx - 1}`)?.focus();
-                          }
+                        if (e.key === 'Backspace' && !digit && idx > 0) {
+                          document.getElementById(`otp-${idx - 1}`)?.focus();
+                        }
                       }}
                       className="w-12 h-12 text-center text-xl font-bold border border-gray-300 rounded-lg focus:border-blue-600 focus:ring-1 focus:ring-blue-600 outline-none text-gray-800 transition-all"
                     />
@@ -268,22 +268,22 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                 </div>
 
                 <div className="flex items-center justify-between">
-                     <div className="flex items-center gap-1 text-xs font-bold text-gray-500">
-                        <Timer size={14} />
-                        {timer > 0 ? (
-                             <span>Resend in 00:{timer < 10 ? `0${timer}` : timer}</span>
-                        ) : (
-                             <span className="text-red-500">Code Expired?</span>
-                        )}
-                     </div>
-                     
-                     <button 
-                        onClick={handleResendCode}
-                        disabled={!canResend || isLoading}
-                        className={`flex items-center gap-1 text-xs font-bold ${canResend ? 'text-blue-600 hover:underline cursor-pointer' : 'text-gray-300 cursor-not-allowed'}`}
-                     >
-                        <RotateCcw size={12} /> Resend Code
-                     </button>
+                  <div className="flex items-center gap-1 text-xs font-bold text-gray-500">
+                    <Timer size={14} />
+                    {timer > 0 ? (
+                      <span>Resend in 00:{timer < 10 ? `0${timer}` : timer}</span>
+                    ) : (
+                      <span className="text-red-500">Code Expired?</span>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={handleResendCode}
+                    disabled={!canResend || isLoading}
+                    className={`flex items-center gap-1 text-xs font-bold ${canResend ? 'text-blue-600 hover:underline cursor-pointer' : 'text-gray-300 cursor-not-allowed'}`}
+                  >
+                    <RotateCcw size={12} /> Resend Code
+                  </button>
                 </div>
 
                 <button
@@ -304,7 +304,7 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                 className="space-y-6 pt-4 text-center"
               >
                 <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-2">
-                    <Check size={32} className="text-green-600" />
+                  <Check size={32} className="text-green-600" />
                 </div>
 
                 <div>
@@ -376,9 +376,9 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
                 className="flex flex-col items-center text-center space-y-6 pt-4"
               >
                 <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-2">
-                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-                      <Check size={40} strokeWidth={3} className="text-black" />
-                   </div>
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
+                    <Check size={40} strokeWidth={3} className="text-black" />
+                  </div>
                 </div>
 
                 <div>
