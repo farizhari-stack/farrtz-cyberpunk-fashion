@@ -501,6 +501,35 @@ const authService = {
             message: 'Password updated'
         };
     },
+    async updateUser (user) {
+        try {
+            const res = await fetch('/api/auth/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            });
+            const data = await res.json();
+            if (data.success && data.user) {
+                // Update session
+                const currentSession = authService.getCurrentUserSession();
+                if (currentSession && currentSession.id === data.user.id) {
+                    authService.setUserSession(data.user);
+                }
+                const currentAdmin = authService.getCurrentAdminSession();
+                if (currentAdmin && currentAdmin.id === data.user.id) {
+                    authService.setAdminSession(data.user);
+                }
+            }
+            return data;
+        } catch (e) {
+            return {
+                success: false,
+                message: 'Update failed'
+            };
+        }
+    },
     // Orders
     createOrder: async (order)=>{
         await fetch('/api/orders', {
