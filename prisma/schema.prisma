@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String 
+  firstName String
+  lastName  String
+  avatar    String?
+  address   String?
+  isAdmin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  orders    Order[]
+  feedbacks Feedback[]
+  messages  ChatMessage[]
+  conversations ChatConversation[]
+}
+
+model Product {
+  id                 Int      @id @default(autoincrement())
+  title              String
+  price              Float
+  originalPrice      Float?
+  discountPercentage Float?
+  discountEndTime    DateTime?
+  imageUrl           String
+  category           String
+  description        String?
+  isNew              Boolean  @default(false)
+  isSale             Boolean  @default(false)
+}
+
+model Order {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  totalAmount    Float
+  status         String   @default("pending")
+  date           DateTime @default(now())
+  paymentMethod  String
+  paymentProofUrl String?
+  items          Json     
+}
+
+model Feedback {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  userName  String
+  userEmail String
+  rating    Int
+  message   String
+  type      String
+  photoUrl  String?
+  orderId   String?
+  date      DateTime @default(now())
+  status    String   @default("pending")
+}
+
+model ChatMessage {
+  id             String   @id @default(uuid())
+  conversationId String
+  conversation   ChatConversation @relation(fields: [conversationId], references: [userId])
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  userName       String
+  message        String
+  sender         String
+  timestamp      DateTime @default(now())
+  read           Boolean  @default(false)
+}
+
+model ChatConversation {
+  userId          String   @id
+  user            User     @relation(fields: [userId], references: [id])
+  userName        String
+  userEmail       String
+  lastMessageTime DateTime @default(now())
+  unreadCount     Int      @default(0)
+  messages        ChatMessage[]
+}
+
+model Coupon {
+  id              String   @id @default(uuid())
+  code            String   @unique
+  discountPercent Float
+  createdDate     DateTime @default(now())
+  expiryDate      DateTime?
+  isActive        Boolean  @default(true)
+  usageCount      Int      @default(0)
+  maxUsage        Int?
+  createdBy       String
+  usedBy          String[] 
+}

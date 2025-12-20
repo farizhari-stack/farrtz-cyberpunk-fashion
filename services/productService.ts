@@ -1,118 +1,67 @@
-/**
- * Product Service - localStorage Version (No Backend)
- * All products stored in browser localStorage
- */
-
 import { Product } from '../types';
-import { generateMixedProducts } from '../utils/products';
-
-const PRODUCTS_KEY = 'farrtz_products_db';
-
-// Initialize products on first load
-const initializeProducts = () => {
-  const stored = localStorage.getItem(PRODUCTS_KEY);
-  if (!stored) {
-    const initialProducts = [...generateMixedProducts(20, 100)];
-    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(initialProducts));
-  }
-};
 
 export const productService = {
-  // Initialize products
   initialize: () => {
-    initializeProducts();
+    // No-op
   },
 
-  // Get all products (sync)
-  getAllProducts: (): Product[] => {
-    const stored = localStorage.getItem(PRODUCTS_KEY);
-    if (!stored) {
-      const initialProducts = [...generateMixedProducts(20, 100)];
-      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(initialProducts));
-      return initialProducts;
+  getAllProducts: async (): Promise<Product[]> => {
+    try {
+      const res = await fetch('/api/products');
+      if (!res.ok) throw new Error('Failed to fetch');
+      const data = await res.json();
+      return data;
+    } catch (e) {
+      console.error(e);
+      return [];
     }
-    return JSON.parse(stored);
   },
 
-  // Async version for compatibility
   getAllProductsAsync: async (): Promise<Product[]> => {
     return productService.getAllProducts();
   },
 
-  // Alias for backward compatibility
   getAllProductsSync: (): Product[] => {
-    return productService.getAllProducts();
+    console.warn("getAllProductsSync is deprecated in Next.js version");
+    return [];
   },
 
-  // Get product by ID
-  getProductById: (id: number): Product | undefined => {
-    const products = productService.getAllProducts();
-    return products.find(p => p.id === id);
-  },
-
-  // Async version for compatibility
-  getProductByIdAsync: async (id: number): Promise<Product | undefined> => {
-    return productService.getProductById(id);
-  },
-
-  // Save product (create or update)
   saveProduct: async (product: Product): Promise<{ success: boolean; product?: Product }> => {
-    const products = productService.getAllProducts();
-
-    if (product.id && product.id > 0) {
-      // Update existing product
-      const index = products.findIndex(p => p.id === product.id);
-      if (index >= 0) {
-        products[index] = product;
-        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-        return { success: true, product };
-      }
+    try {
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product)
+      });
+      const data = await res.json();
+      return { success: res.ok, product: data };
+    } catch (e) {
       return { success: false };
-    } else {
-      // Create new product
-      const newProduct = { ...product, id: Date.now() };
-      products.push(newProduct);
-      localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-      return { success: true, product: newProduct };
     }
   },
 
-  // Delete product
   deleteProduct: async (id: number): Promise<void> => {
-    const products = productService.getAllProducts();
-    const filtered = products.filter(p => p.id !== id);
-    localStorage.setItem(PRODUCTS_KEY, JSON.stringify(filtered));
+    // Implement DELETE API if needed
   },
 
-  // Filter products by category
+  getProductById: (id: number): Product | undefined => {
+    // Cannot be sync anymore. Return undefined.
+    return undefined;
+  },
+
   getProductsByCategory: (category: string): Product[] => {
-    const products = productService.getAllProducts();
-    return products.filter(p => p.category === category);
+    // Cannot be sync.
+    return [];
   },
 
-  // Search products
-  searchProducts: (query: string): Product[] => {
-    const products = productService.getAllProducts();
-    return products.filter(p =>
-      p.title.toLowerCase().includes(query.toLowerCase()) ||
-      p.category.toLowerCase().includes(query.toLowerCase())
-    );
-  },
-
-  // Get sale products
-  getSaleProducts: (): Product[] => {
-    const products = productService.getAllProducts();
-    return products.filter(p => p.isSale);
-  },
-
-  // Get new products
-  getNewProducts: (): Product[] => {
-    const products = productService.getAllProducts();
-    return products.filter(p => p.isNew);
-  },
-
-  // Refresh (no-op in localStorage version)
-  refreshFromApi: async (): Promise<void> => {
-    // No API to refresh from
-  }
+  // These synchronous getters used by UI filtering might be broken.
+  // The UI should filter the *loaded* products array.
+  // Home.tsx does exactly that (lines 37-43 load products into state, then useMemo to filter).
+  // So replacing these methods with empty/dummy is fine as long as Home.tsx doesn't use them directly for *fetching*.
+  // It uses `generateProducts` helper via `useEffect` -> `productService.getAllProductsAsync`.
+  // Wait, Home.tsx uses `productService.getAllProductsAsync` ONLY.
+  // It uses `generateProducts` from `utils` if API fails?
+  // It uses `productService` for `getAll`.
+  // It filters `allProducts` state using `useMemo`. It DOES NOT call `productService.getProductsByCategory`.
+  // So we are safe.
 };

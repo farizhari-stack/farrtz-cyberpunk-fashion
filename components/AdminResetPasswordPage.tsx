@@ -16,7 +16,7 @@ const AdminResetPasswordPage: React.FC<AdminResetPasswordPageProps> = ({ onReset
     const [successMessage, setSuccessMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    // For localStorage version, we always allow password reset
+    // Always allow for now
     const isValidSession = true;
 
     const handleSubmit = async (e: React.FormEvent) => {

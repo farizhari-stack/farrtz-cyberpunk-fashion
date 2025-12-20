@@ -19,8 +19,27 @@ export const getProductTitle = (category: string, index: number) => {
 };
 
 export const getProductImage = (category: string, id: number) => {
-  // Return empty string as requested so user can replace with their own images later
-  return "";
+  // Map categories to local assets in /public
+  // Next.js serves files in /public at the root URL path
+  switch (category) {
+    case 'T-shirt':
+      return id % 2 === 0 ? "/tshirt-black-futures-edge.png" : "/tshirt-white-techwear.png";
+    case 'Bags':
+      return "/icons/bag-3d.png";
+    case 'Hats':
+      return "/icons/hat-3d.png";
+    case 'Hoodies':
+      return "/icons/hoodie-3d.png";
+    case 'Kids':
+      return "/icons/kids-3d.png";
+    case 'Shorts':
+      return "/icons/shorts-3d.png";
+    case 'Tank Tops':
+      // Fallback or use banner if no specific icon
+      return "/tshirt-white-techwear.png";
+    default:
+      return "/cyberpunk-robot.png";
+  }
 };
 
 // Base prices matching the design specs
