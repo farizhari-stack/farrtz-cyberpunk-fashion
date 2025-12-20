@@ -83,14 +83,14 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
     setError('');
 
     try {
-      //   const result = await authService.initiatePasswordReset(email);
-      //   if (result.success) {
-      setStep(2);
-      setTimer(60); // Start timer
-      setCanResend(false);
-      //   } else {
-      //       setError(result.message || 'Failed to send code');
-      //   }
+      const result = await authService.initiatePasswordReset(email);
+      if (result.success) {
+        setStep(2);
+        setTimer(60); // Start timer
+        setCanResend(false);
+      } else {
+        setError(result.message || 'Failed to send code');
+      }
     } catch (err) {
       setError('An error occurred. Please try again.');
     } finally {
@@ -109,12 +109,12 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
     setError('');
 
     try {
-      //   const result = await authService.validateResetCode(email, code);
-      //   if (result.success) {
-      setStep(3);
-      //   } else {
-      //       setError(result.message || 'Invalid code');
-      //   }
+      const result = await authService.validateResetCode(email, code);
+      if (result.success) {
+        setStep(3);
+      } else {
+        setError(result.message || 'Invalid code');
+      }
     } catch (err) {
       setError('Validation failed');
     } finally {
@@ -142,12 +142,12 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
     setError('');
 
     try {
-      //   const result = await authService.completePasswordReset(email, newPassword);
-      //   if (result.success) {
-      setStep(5);
-      //   } else {
-      //       setError(result.message || 'Update failed');
-      //   }
+      const result = await authService.completePasswordReset(email, newPassword);
+      if (result.success) {
+        setStep(5);
+      } else {
+        setError(result.message || 'Update failed');
+      }
     } catch (err) {
       setError('An error occurred');
     } finally {

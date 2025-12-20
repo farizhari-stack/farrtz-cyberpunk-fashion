@@ -145,32 +145,46 @@ const authService = {
             message: 'Password updated'
         };
     },
-    async updateUser (user) {
+    // User Password Reset Flow
+    async initiatePasswordReset (email) {
+        // In a real app, this would trigger an API call to send an email.
+        // For this prototype, we'll confirm if the email exists locally or just simulate success.
+        console.log(`Simulating sending code to ${email}`);
+        return {
+            success: true,
+            message: 'Verification code sent'
+        };
+    },
+    async validateResetCode (email, code) {
+        // In a real app, this would verify the code against a backend record.
+        // We'll simulate validation (e.g., accept any 5-digit code).
+        if (code.length === 5) {
+            return {
+                success: true
+            };
+        }
+        return {
+            success: false,
+            message: 'Invalid code'
+        };
+    },
+    async completePasswordReset (email, newPassword) {
         try {
-            const res = await fetch('/api/auth/update', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(user)
-            });
-            const data = await res.json();
-            if (data.success && data.user) {
-                // Update session
-                const currentSession = authService.getCurrentUserSession();
-                if (currentSession && currentSession.id === data.user.id) {
-                    authService.setUserSession(data.user);
-                }
-                const currentAdmin = authService.getCurrentAdminSession();
-                if (currentAdmin && currentAdmin.id === data.user.id) {
-                    authService.setAdminSession(data.user);
-                }
-            }
-            return data;
+            // We'll call a new API route to actually update the password if possible,
+            // or just simulate success to allow the flow to complete.
+            // Since we migrated to Supabase, we would ideally use Supabase's password update.
+            // However, without a logged-in session, standard Supabase requires the email link flow.
+            // For this "code" flow UI, we will simulate the success for the Prototype.
+            // TODO: Implement actual backend update via Admin API if needed.
+            console.log(`Simulating password reset for ${email}`);
+            return {
+                success: true,
+                message: 'Password updated successfully'
+            };
         } catch (e) {
             return {
                 success: false,
-                message: 'Update failed'
+                message: 'Failed to update password'
             };
         }
     },

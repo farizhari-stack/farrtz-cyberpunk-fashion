@@ -3999,6 +3999,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$check$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Check$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/check.js [app-ssr] (ecmascript) <export default as Check>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$timer$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Timer$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/timer.js [app-ssr] (ecmascript) <export default as Timer>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$rotate$2d$ccw$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__RotateCcw$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/rotate-ccw.js [app-ssr] (ecmascript) <export default as RotateCcw>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$services$2f$auth$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/services/auth.ts [app-ssr] (ecmascript)");
+;
 ;
 ;
 ;
@@ -4084,14 +4086,14 @@ const ForgotPasswordModal = ({ isOpen, onClose })=>{
         setIsLoading(true);
         setError('');
         try {
-            //   const result = await authService.initiatePasswordReset(email);
-            //   if (result.success) {
-            setStep(2);
-            setTimer(60); // Start timer
-            setCanResend(false);
-        //   } else {
-        //       setError(result.message || 'Failed to send code');
-        //   }
+            const result = await __TURBOPACK__imported__module__$5b$project$5d2f$services$2f$auth$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["authService"].initiatePasswordReset(email);
+            if (result.success) {
+                setStep(2);
+                setTimer(60); // Start timer
+                setCanResend(false);
+            } else {
+                setError(result.message || 'Failed to send code');
+            }
         } catch (err) {
             setError('An error occurred. Please try again.');
         } finally{
@@ -4107,12 +4109,12 @@ const ForgotPasswordModal = ({ isOpen, onClose })=>{
         setIsLoading(true);
         setError('');
         try {
-            //   const result = await authService.validateResetCode(email, code);
-            //   if (result.success) {
-            setStep(3);
-        //   } else {
-        //       setError(result.message || 'Invalid code');
-        //   }
+            const result = await __TURBOPACK__imported__module__$5b$project$5d2f$services$2f$auth$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["authService"].validateResetCode(email, code);
+            if (result.success) {
+                setStep(3);
+            } else {
+                setError(result.message || 'Invalid code');
+            }
         } catch (err) {
             setError('Validation failed');
         } finally{
@@ -4142,12 +4144,12 @@ const ForgotPasswordModal = ({ isOpen, onClose })=>{
         setIsLoading(true);
         setError('');
         try {
-            //   const result = await authService.completePasswordReset(email, newPassword);
-            //   if (result.success) {
-            setStep(5);
-        //   } else {
-        //       setError(result.message || 'Update failed');
-        //   }
+            const result = await __TURBOPACK__imported__module__$5b$project$5d2f$services$2f$auth$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["authService"].completePasswordReset(email, newPassword);
+            if (result.success) {
+                setStep(5);
+            } else {
+                setError(result.message || 'Update failed');
+            }
         } catch (err) {
             setError('An error occurred');
         } finally{
