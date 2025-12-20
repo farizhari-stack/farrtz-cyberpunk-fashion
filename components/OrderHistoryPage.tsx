@@ -285,7 +285,7 @@ const OrderDetailModal = ({ order, onClose, getEstimatedArrival }: { order: Orde
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.9, opacity: 0, y: 50 }}
                     className="bg-[#1e1b4b] border border-purple-500/30 w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-3xl relative shadow-[0_0_50px_rgba(76,29,149,0.3)] custom-scrollbar"
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e: React.MouseEvent) => e.stopPropagation()}
                 >
                     {/* Header */}
                     <div className="sticky top-0 bg-[#1e1b4b]/95 backdrop-blur-xl p-6 border-b border-white/10 flex justify-between items-center z-10">
