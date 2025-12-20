@@ -206,7 +206,10 @@ export default function UserSPA() {
     };
 
     return (
-        <>
+        <div className="min-h-screen bg-black text-white relative">
+            {/* Debug Banner - Remove later */}
+            {/* <div className="bg-red-600 text-white p-1 text-center text-xs">System Online</div> */}
+
             {currentPage === 'home' && (
                 <Home
                     onNavigate={setCurrentPage}
@@ -306,6 +309,6 @@ export default function UserSPA() {
                     {...commonProps}
                 />
             )}
-        </>
+        </div>
     );
 }
