@@ -5921,7 +5921,7 @@ const SizeChartModal = ({ isOpen, onClose, category })=>{
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/SizeChartModal.tsx",
                                                     lineNumber: 156,
-                                                    columnNumber: 25
+                                                    columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                                     className: "px-6 py-3 text-sm text-center text-gray-600 font-mono group-hover:text-black group-hover:font-bold bg-gray-50/50",
@@ -5929,7 +5929,7 @@ const SizeChartModal = ({ isOpen, onClose, category })=>{
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/SizeChartModal.tsx",
                                                     lineNumber: 157,
-                                                    columnNumber: 25
+                                                    columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                                     className: "px-6 py-3 text-sm text-center text-gray-600 font-mono group-hover:text-black group-hover:font-bold",
@@ -5937,13 +5937,13 @@ const SizeChartModal = ({ isOpen, onClose, category })=>{
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/SizeChartModal.tsx",
                                                     lineNumber: 158,
-                                                    columnNumber: 25
+                                                    columnNumber: 21
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, idx, true, {
                                             fileName: "[project]/components/SizeChartModal.tsx",
                                             lineNumber: 155,
-                                            columnNumber: 21
+                                            columnNumber: 19
                                         }, ("TURBOPACK compile-time value", void 0)))
                                 }, void 0, false, {
                                     fileName: "[project]/components/SizeChartModal.tsx",
@@ -5973,7 +5973,7 @@ const SizeChartModal = ({ isOpen, onClose, category })=>{
                                     }, void 0, false, {
                                         fileName: "[project]/components/SizeChartModal.tsx",
                                         lineNumber: 168,
-                                        columnNumber: 18
+                                        columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-xs text-gray-500",
@@ -5986,13 +5986,13 @@ const SizeChartModal = ({ isOpen, onClose, category })=>{
                                     }, void 0, true, {
                                         fileName: "[project]/components/SizeChartModal.tsx",
                                         lineNumber: 169,
-                                        columnNumber: 18
+                                        columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/SizeChartModal.tsx",
                                 lineNumber: 167,
-                                columnNumber: 14
+                                columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "flex items-start gap-2",
@@ -6003,7 +6003,7 @@ const SizeChartModal = ({ isOpen, onClose, category })=>{
                                     }, void 0, false, {
                                         fileName: "[project]/components/SizeChartModal.tsx",
                                         lineNumber: 172,
-                                        columnNumber: 18
+                                        columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-xs text-gray-500",
@@ -6011,13 +6011,13 @@ const SizeChartModal = ({ isOpen, onClose, category })=>{
                                     }, void 0, false, {
                                         fileName: "[project]/components/SizeChartModal.tsx",
                                         lineNumber: 173,
-                                        columnNumber: 18
+                                        columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/SizeChartModal.tsx",
                                 lineNumber: 171,
-                                columnNumber: 14
+                                columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "flex items-start gap-2",
@@ -6028,7 +6028,7 @@ const SizeChartModal = ({ isOpen, onClose, category })=>{
                                     }, void 0, false, {
                                         fileName: "[project]/components/SizeChartModal.tsx",
                                         lineNumber: 176,
-                                        columnNumber: 18
+                                        columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-xs text-gray-500",
@@ -6036,13 +6036,13 @@ const SizeChartModal = ({ isOpen, onClose, category })=>{
                                     }, void 0, false, {
                                         fileName: "[project]/components/SizeChartModal.tsx",
                                         lineNumber: 177,
-                                        columnNumber: 18
+                                        columnNumber: 15
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/SizeChartModal.tsx",
                                 lineNumber: 175,
-                                columnNumber: 14
+                                columnNumber: 13
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
