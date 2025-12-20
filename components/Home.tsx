@@ -107,10 +107,9 @@ const Home: React.FC<HomeProps> = ({ onNavigate, user, onLogout, onProductClick,
     }, [allProducts]);
 
     // Category Logic (Simulated generation based on category if in main DB, else fallback to utils)
+    // Category Logic - Only from Real Database
     const categoryProducts = useMemo(() => {
-        const filtered = allProducts.filter(p => p.category === activeCategory);
-        if (filtered.length > 0) return filtered;
-        return generateProducts(activeCategory, 12, 600);
+        return allProducts.filter(p => p.category === activeCategory);
     }, [activeCategory, allProducts]);
 
     return (

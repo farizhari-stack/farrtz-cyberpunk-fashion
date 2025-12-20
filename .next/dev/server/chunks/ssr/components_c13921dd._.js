@@ -3600,9 +3600,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$FeedbackSectio
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ChatWidget$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/ChatWidget.tsx [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AccountSidebar$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/AccountSidebar.tsx [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$CategoryBanner$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/CategoryBanner.tsx [app-ssr] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$utils$2f$products$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/utils/products.ts [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$services$2f$productService$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/services/productService.ts [app-ssr] (ecmascript)");
-;
 ;
 ;
 ;
@@ -3693,10 +3691,9 @@ const Home = ({ onNavigate, user, onLogout, onProductClick, cartItemCount, targe
         allProducts
     ]);
     // Category Logic (Simulated generation based on category if in main DB, else fallback to utils)
+    // Category Logic - Only from Real Database
     const categoryProducts = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useMemo"])(()=>{
-        const filtered = allProducts.filter((p)=>p.category === activeCategory);
-        if (filtered.length > 0) return filtered;
-        return (0, __TURBOPACK__imported__module__$5b$project$5d2f$utils$2f$products$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["generateProducts"])(activeCategory, 12, 600);
+        return allProducts.filter((p)=>p.category === activeCategory);
     }, [
         activeCategory,
         allProducts
@@ -3712,7 +3709,7 @@ const Home = ({ onNavigate, user, onLogout, onProductClick, cartItemCount, targe
                 onSearch: onSearch
             }, void 0, false, {
                 fileName: "[project]/components/Home.tsx",
-                lineNumber: 118,
+                lineNumber: 117,
                 columnNumber: 13
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$CategoryBar$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -3720,7 +3717,7 @@ const Home = ({ onNavigate, user, onLogout, onProductClick, cartItemCount, targe
                 onSelectCategory: handleCategorySelect
             }, void 0, false, {
                 fileName: "[project]/components/Home.tsx",
-                lineNumber: 126,
+                lineNumber: 125,
                 columnNumber: 13
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AccountSidebar$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -3731,7 +3728,7 @@ const Home = ({ onNavigate, user, onLogout, onProductClick, cartItemCount, targe
                 onNavigate: onNavigate
             }, void 0, false, {
                 fileName: "[project]/components/Home.tsx",
-                lineNumber: 131,
+                lineNumber: 130,
                 columnNumber: 13
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$framer$2d$motion$2f$dist$2f$es$2f$components$2f$AnimatePresence$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AnimatePresence"], {
@@ -3752,7 +3749,7 @@ const Home = ({ onNavigate, user, onLogout, onProductClick, cartItemCount, targe
                     children: [
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Hero$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                             fileName: "[project]/components/Home.tsx",
-                            lineNumber: 148,
+                            lineNumber: 147,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)),
                         activeFlashSaleProducts.length > 0 && flashSaleEndTime && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ProductSection$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -3767,12 +3764,12 @@ const Home = ({ onNavigate, user, onLogout, onProductClick, cartItemCount, targe
                                 targetDate: flashSaleEndTime
                             }, void 0, false, {
                                 fileName: "[project]/components/Home.tsx",
-                                lineNumber: 159,
+                                lineNumber: 158,
                                 columnNumber: 50
                             }, void 0)
                         }, void 0, false, {
                             fileName: "[project]/components/Home.tsx",
-                            lineNumber: 151,
+                            lineNumber: 150,
                             columnNumber: 29
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ProductSection$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -3785,7 +3782,7 @@ const Home = ({ onNavigate, user, onLogout, onProductClick, cartItemCount, targe
                             onViewAll: handleViewAllClick
                         }, void 0, false, {
                             fileName: "[project]/components/Home.tsx",
-                            lineNumber: 163,
+                            lineNumber: 162,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ProductSection$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -3798,13 +3795,13 @@ const Home = ({ onNavigate, user, onLogout, onProductClick, cartItemCount, targe
                             onViewAll: handleViewAllClick
                         }, void 0, false, {
                             fileName: "[project]/components/Home.tsx",
-                            lineNumber: 173,
+                            lineNumber: 172,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, "main-content", true, {
                     fileName: "[project]/components/Home.tsx",
-                    lineNumber: 141,
+                    lineNumber: 140,
                     columnNumber: 21
                 }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(motion.div, {
                     initial: {
@@ -3824,7 +3821,7 @@ const Home = ({ onNavigate, user, onLogout, onProductClick, cartItemCount, targe
                             category: activeCategory
                         }, void 0, false, {
                             fileName: "[project]/components/Home.tsx",
-                            lineNumber: 192,
+                            lineNumber: 191,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ProductSection$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -3837,18 +3834,18 @@ const Home = ({ onNavigate, user, onLogout, onProductClick, cartItemCount, targe
                             onViewAll: handleViewAllClick
                         }, void 0, false, {
                             fileName: "[project]/components/Home.tsx",
-                            lineNumber: 195,
+                            lineNumber: 194,
                             columnNumber: 25
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, `category-${activeCategory}`, true, {
                     fileName: "[project]/components/Home.tsx",
-                    lineNumber: 184,
+                    lineNumber: 183,
                     columnNumber: 21
                 }, ("TURBOPACK compile-time value", void 0))
             }, void 0, false, {
                 fileName: "[project]/components/Home.tsx",
-                lineNumber: 139,
+                lineNumber: 138,
                 columnNumber: 13
             }, ("TURBOPACK compile-time value", void 0)),
             user && onSubmitFeedback && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$FeedbackSection$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -3856,12 +3853,12 @@ const Home = ({ onNavigate, user, onLogout, onProductClick, cartItemCount, targe
                 onSubmitFeedback: onSubmitFeedback
             }, void 0, false, {
                 fileName: "[project]/components/Home.tsx",
-                lineNumber: 210,
+                lineNumber: 209,
                 columnNumber: 17
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Footer$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/components/Home.tsx",
-                lineNumber: 213,
+                lineNumber: 212,
                 columnNumber: 13
             }, ("TURBOPACK compile-time value", void 0)),
             user && onSendMessage && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ChatWidget$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -3871,13 +3868,13 @@ const Home = ({ onNavigate, user, onLogout, onProductClick, cartItemCount, targe
                 messages: conversations.find((c)=>c.userId === user.id)?.messages || []
             }, void 0, false, {
                 fileName: "[project]/components/Home.tsx",
-                lineNumber: 217,
+                lineNumber: 216,
                 columnNumber: 17
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/components/Home.tsx",
-        lineNumber: 117,
+        lineNumber: 116,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -3911,7 +3908,7 @@ const CountdownTimer = ({ targetDate })=>{
             children: "Ended"
         }, void 0, false, {
             fileName: "[project]/components/Home.tsx",
-            lineNumber: 258,
+            lineNumber: 257,
             columnNumber: 16
         }, ("TURBOPACK compile-time value", void 0));
     }
@@ -3923,7 +3920,7 @@ const CountdownTimer = ({ targetDate })=>{
                 children: "Ending In:"
             }, void 0, false, {
                 fileName: "[project]/components/Home.tsx",
-                lineNumber: 263,
+                lineNumber: 262,
                 columnNumber: 13
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3934,7 +3931,7 @@ const CountdownTimer = ({ targetDate })=>{
                         children: formatTime(timeLeft.hours)
                     }, void 0, false, {
                         fileName: "[project]/components/Home.tsx",
-                        lineNumber: 265,
+                        lineNumber: 264,
                         columnNumber: 17
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3942,7 +3939,7 @@ const CountdownTimer = ({ targetDate })=>{
                         children: ":"
                     }, void 0, false, {
                         fileName: "[project]/components/Home.tsx",
-                        lineNumber: 266,
+                        lineNumber: 265,
                         columnNumber: 17
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3950,7 +3947,7 @@ const CountdownTimer = ({ targetDate })=>{
                         children: formatTime(timeLeft.minutes)
                     }, void 0, false, {
                         fileName: "[project]/components/Home.tsx",
-                        lineNumber: 267,
+                        lineNumber: 266,
                         columnNumber: 17
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3958,7 +3955,7 @@ const CountdownTimer = ({ targetDate })=>{
                         children: ":"
                     }, void 0, false, {
                         fileName: "[project]/components/Home.tsx",
-                        lineNumber: 268,
+                        lineNumber: 267,
                         columnNumber: 17
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3966,19 +3963,19 @@ const CountdownTimer = ({ targetDate })=>{
                         children: formatTime(timeLeft.seconds)
                     }, void 0, false, {
                         fileName: "[project]/components/Home.tsx",
-                        lineNumber: 269,
+                        lineNumber: 268,
                         columnNumber: 17
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/Home.tsx",
-                lineNumber: 264,
+                lineNumber: 263,
                 columnNumber: 13
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/components/Home.tsx",
-        lineNumber: 262,
+        lineNumber: 261,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -8091,7 +8088,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Navbar$2e$tsx_
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Footer$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/Footer.tsx [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AccountSidebar$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/components/AccountSidebar.tsx [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$services$2f$auth$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/services/auth.ts [app-ssr] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$utils$2f$products$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/utils/products.ts [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$services$2f$productService$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/services/productService.ts [app-ssr] (ecmascript)");
 ;
 ;
 ;
@@ -8106,10 +8103,18 @@ const FavoritesPage = ({ onNavigate, user, setUser, onLogout, cartItemCount, onP
     const [isSidebarOpen, setIsSidebarOpen] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     const [wishlistProducts, setWishlistProducts] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        if (user && user.wishlist) {
-            const products = user.wishlist.map((id)=>(0, __TURBOPACK__imported__module__$5b$project$5d2f$utils$2f$products$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getProductById"])(id)).filter((p)=>p !== undefined);
-            setWishlistProducts(products);
-        }
+        const loadWishlist = async ()=>{
+            if (user && user.wishlist && user.wishlist.length > 0) {
+                // In a real app, we'd have a specific API for fetching wishlist items.
+                // Here we fetch all (cached/fast) and filter.
+                const all = await __TURBOPACK__imported__module__$5b$project$5d2f$services$2f$productService$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["productService"].getAllProductsAsync();
+                const filtered = all.filter((p)=>user.wishlist?.includes(p.id));
+                setWishlistProducts(filtered);
+            } else {
+                setWishlistProducts([]);
+            }
+        };
+        loadWishlist();
     }, [
         user
     ]);
@@ -8140,8 +8145,8 @@ const FavoritesPage = ({ onNavigate, user, setUser, onLogout, cartItemCount, onP
                 onSearch: onSearch
             }, void 0, false, {
                 fileName: "[project]/components/FavoritesPage.tsx",
-                lineNumber: 53,
-                columnNumber: 7
+                lineNumber: 61,
+                columnNumber: 13
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$AccountSidebar$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
                 isOpen: isSidebarOpen,
@@ -8151,8 +8156,8 @@ const FavoritesPage = ({ onNavigate, user, setUser, onLogout, cartItemCount, onP
                 onNavigate: onNavigate
             }, void 0, false, {
                 fileName: "[project]/components/FavoritesPage.tsx",
-                lineNumber: 61,
-                columnNumber: 7
+                lineNumber: 69,
+                columnNumber: 13
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 min-h-[80vh]",
@@ -8173,21 +8178,21 @@ const FavoritesPage = ({ onNavigate, user, setUser, onLogout, cartItemCount, onP
                                 children: "My Account"
                             }, void 0, false, {
                                 fileName: "[project]/components/FavoritesPage.tsx",
-                                lineNumber: 75,
-                                columnNumber: 13
+                                lineNumber: 83,
+                                columnNumber: 21
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "w-full h-[1px] bg-gradient-to-r from-purple-500 to-transparent mb-6"
                             }, void 0, false, {
                                 fileName: "[project]/components/FavoritesPage.tsx",
-                                lineNumber: 76,
-                                columnNumber: 13
+                                lineNumber: 84,
+                                columnNumber: 21
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/FavoritesPage.tsx",
-                        lineNumber: 70,
-                        columnNumber: 9
+                        lineNumber: 78,
+                        columnNumber: 17
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "bg-white/5 backdrop-blur-md rounded-3xl p-6 md:p-8 border border-white/10 shadow-2xl",
@@ -8202,20 +8207,20 @@ const FavoritesPage = ({ onNavigate, user, setUser, onLogout, cartItemCount, onP
                                             fill: "currentColor"
                                         }, void 0, false, {
                                             fileName: "[project]/components/FavoritesPage.tsx",
-                                            lineNumber: 82,
-                                            columnNumber: 21
+                                            lineNumber: 90,
+                                            columnNumber: 29
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/components/FavoritesPage.tsx",
-                                        lineNumber: 81,
-                                        columnNumber: 17
+                                        lineNumber: 89,
+                                        columnNumber: 25
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     "Favorite"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/FavoritesPage.tsx",
-                                lineNumber: 80,
-                                columnNumber: 13
+                                lineNumber: 88,
+                                columnNumber: 21
                             }, ("TURBOPACK compile-time value", void 0)),
                             wishlistProducts.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "text-center py-20 flex flex-col items-center",
@@ -8226,29 +8231,29 @@ const FavoritesPage = ({ onNavigate, user, setUser, onLogout, cartItemCount, onP
                                             size: 40
                                         }, void 0, false, {
                                             fileName: "[project]/components/FavoritesPage.tsx",
-                                            lineNumber: 90,
-                                            columnNumber: 25
+                                            lineNumber: 98,
+                                            columnNumber: 33
                                         }, ("TURBOPACK compile-time value", void 0))
                                     }, void 0, false, {
                                         fileName: "[project]/components/FavoritesPage.tsx",
-                                        lineNumber: 89,
-                                        columnNumber: 21
+                                        lineNumber: 97,
+                                        columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
                                         className: "text-xl font-bold mb-2",
                                         children: "Your wishlist is empty"
                                     }, void 0, false, {
                                         fileName: "[project]/components/FavoritesPage.tsx",
-                                        lineNumber: 92,
-                                        columnNumber: 21
+                                        lineNumber: 100,
+                                        columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-gray-400 mb-6",
                                         children: "Save items you love to your wishlist to buy them later."
                                     }, void 0, false, {
                                         fileName: "[project]/components/FavoritesPage.tsx",
-                                        lineNumber: 93,
-                                        columnNumber: 21
+                                        lineNumber: 101,
+                                        columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0)),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                         onClick: ()=>onNavigate('home'),
@@ -8256,14 +8261,14 @@ const FavoritesPage = ({ onNavigate, user, setUser, onLogout, cartItemCount, onP
                                         children: "Start Shopping"
                                     }, void 0, false, {
                                         fileName: "[project]/components/FavoritesPage.tsx",
-                                        lineNumber: 94,
-                                        columnNumber: 21
+                                        lineNumber: 102,
+                                        columnNumber: 29
                                     }, ("TURBOPACK compile-time value", void 0))
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/components/FavoritesPage.tsx",
-                                lineNumber: 88,
-                                columnNumber: 17
+                                lineNumber: 96,
+                                columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6",
                                 children: wishlistProducts.map((product)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(motion.div, {
@@ -8288,13 +8293,13 @@ const FavoritesPage = ({ onNavigate, user, setUser, onLogout, cartItemCount, onP
                                                     size: 14
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/FavoritesPage.tsx",
-                                                    lineNumber: 119,
-                                                    columnNumber: 33
+                                                    lineNumber: 127,
+                                                    columnNumber: 41
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             }, void 0, false, {
                                                 fileName: "[project]/components/FavoritesPage.tsx",
-                                                lineNumber: 112,
-                                                columnNumber: 29
+                                                lineNumber: 120,
+                                                columnNumber: 37
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 onClick: ()=>onProductClick(product),
@@ -8306,28 +8311,28 @@ const FavoritesPage = ({ onNavigate, user, setUser, onLogout, cartItemCount, onP
                                                         className: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/FavoritesPage.tsx",
-                                                        lineNumber: 128,
-                                                        columnNumber: 37
+                                                        lineNumber: 136,
+                                                        columnNumber: 45
                                                     }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                         className: "text-xs text-gray-400 font-bold uppercase",
                                                         children: "No Image"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/FavoritesPage.tsx",
-                                                        lineNumber: 130,
-                                                        columnNumber: 37
+                                                        lineNumber: 138,
+                                                        columnNumber: 45
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/FavoritesPage.tsx",
-                                                        lineNumber: 133,
-                                                        columnNumber: 33
+                                                        lineNumber: 141,
+                                                        columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/FavoritesPage.tsx",
-                                                lineNumber: 123,
-                                                columnNumber: 29
+                                                lineNumber: 131,
+                                                columnNumber: 37
                                             }, ("TURBOPACK compile-time value", void 0)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                 className: "p-3",
@@ -8338,8 +8343,8 @@ const FavoritesPage = ({ onNavigate, user, setUser, onLogout, cartItemCount, onP
                                                         children: product.title
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/FavoritesPage.tsx",
-                                                        lineNumber: 138,
-                                                        columnNumber: 33
+                                                        lineNumber: 146,
+                                                        columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0)),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                         className: "flex justify-between items-center",
@@ -8351,53 +8356,53 @@ const FavoritesPage = ({ onNavigate, user, setUser, onLogout, cartItemCount, onP
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/components/FavoritesPage.tsx",
-                                                            lineNumber: 145,
-                                                            columnNumber: 37
+                                                            lineNumber: 153,
+                                                            columnNumber: 45
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     }, void 0, false, {
                                                         fileName: "[project]/components/FavoritesPage.tsx",
-                                                        lineNumber: 144,
-                                                        columnNumber: 33
+                                                        lineNumber: 152,
+                                                        columnNumber: 41
                                                     }, ("TURBOPACK compile-time value", void 0))
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/components/FavoritesPage.tsx",
-                                                lineNumber: 137,
-                                                columnNumber: 29
+                                                lineNumber: 145,
+                                                columnNumber: 37
                                             }, ("TURBOPACK compile-time value", void 0))
                                         ]
                                     }, product.id, true, {
                                         fileName: "[project]/components/FavoritesPage.tsx",
-                                        lineNumber: 104,
-                                        columnNumber: 25
+                                        lineNumber: 112,
+                                        columnNumber: 33
                                     }, ("TURBOPACK compile-time value", void 0)))
                             }, void 0, false, {
                                 fileName: "[project]/components/FavoritesPage.tsx",
-                                lineNumber: 102,
-                                columnNumber: 17
+                                lineNumber: 110,
+                                columnNumber: 25
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/components/FavoritesPage.tsx",
-                        lineNumber: 79,
-                        columnNumber: 9
+                        lineNumber: 87,
+                        columnNumber: 17
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, void 0, true, {
                 fileName: "[project]/components/FavoritesPage.tsx",
-                lineNumber: 69,
-                columnNumber: 7
+                lineNumber: 77,
+                columnNumber: 13
             }, ("TURBOPACK compile-time value", void 0)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$Footer$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/components/FavoritesPage.tsx",
-                lineNumber: 156,
-                columnNumber: 7
+                lineNumber: 164,
+                columnNumber: 13
             }, ("TURBOPACK compile-time value", void 0))
         ]
     }, void 0, true, {
         fileName: "[project]/components/FavoritesPage.tsx",
-        lineNumber: 52,
-        columnNumber: 5
+        lineNumber: 60,
+        columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };
 const __TURBOPACK__default__export__ = FavoritesPage;

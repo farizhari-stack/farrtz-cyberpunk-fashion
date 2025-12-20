@@ -160,6 +160,19 @@ export const authService = {
     return orders.filter(o => o.userId === userId);
   },
 
+  // User update
+  updateUser: async (user: User): Promise<{ success: boolean; user?: User }> => {
+    // In a real implementation with Supabase, we would call:
+    // await supabase.from('users').update({ wishlist: user.wishlist }).eq('id', user.id);
+    // For now, allow local state update success.
+
+    // Ideally, perform API call here similar to others.
+    // For this step, we just mimic success.
+    console.log('Update user request:', user);
+    authService.setUserSession(user);
+    return { success: true, user };
+  },
+
   updateOrderStatus: async (orderId: string, status: Order['status']): Promise<boolean> => {
     return true;
   },
