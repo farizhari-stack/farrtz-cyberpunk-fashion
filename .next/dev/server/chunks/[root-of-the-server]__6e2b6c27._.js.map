@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 46, "column": 0}, "map": {"version":3,"sources":["file:///D:/DownloadChrome/copy-of-farrtz-cyberpunk-fashion-next-update-cap-2/app/api/messages/route.ts"],"sourcesContent":["import { NextResponse } from 'next/server';\r\n// import { supabase } from '@/lib/supabase';\r\n\r\nexport async function GET() {\r\n    // Chat feature temporarily disabled during migration\r\n    return NextResponse.json([]);\r\n}\r\n\r\nexport async function POST(request: Request) {\r\n    return NextResponse.json({ success: true, message: 'Chat temporarily disabled' });\r\n}\r\n"],"names":[],"mappings":";;;;;;AAAA;;AAGO,eAAe;IAClB,qDAAqD;IACrD,OAAO,gJAAY,CAAC,IAAI,CAAC,EAAE;AAC/B;AAEO,eAAe,KAAK,OAAgB;IACvC,OAAO,gJAAY,CAAC,IAAI,CAAC;QAAE,SAAS;QAAM,SAAS;IAA4B;AACnF"}}]
-}
